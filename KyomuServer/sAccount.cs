@@ -9,12 +9,12 @@ namespace KyomuServer
     {
         static JObject AccountCreate(string accountID)
         {
-
+            return null;
         }
 
         static JObject AccountRefer(string accountID)
         {
-            
+            return null;
         }
         
     }

@@ -9,21 +9,22 @@ namespace KyomuServer
     {
         static JObject GetFusenData(string accountID)
         {
-
+            return null;
         }
 
 
         static int CreateFusen(int accountID, out int statusCode)
         {
-
+            statusCode = 0;
+            return 0;
         }
         static void UpdateFusen(JObject fusenData, out int statusCode)
         {
-
+            statusCode = 0;
         }
         static void DeleteFusen(int accountID,int fusenID, out int statusCode)
         {
-
+            statusCode = 0;
         }
 
     }
