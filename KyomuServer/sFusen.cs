@@ -9,18 +9,22 @@ namespace KyomuServer
     {
         public static string Connection { set { Connection = value; } get { return Connection; } }
 
-        public static JObject GetFusenData(string accountID)
+        public static JObject GetFusenAllData(int accountID)
         {
             return null;
         }
 
+    /*    public static JObject GetFusenData(int accountID, int fusenID)
+        {
+            return null;
+        }
+        */
 
-        public static int CreateFusen(int accountID, out int statusCode)
+        public static void CreateFusen(int accountID,int fusenID, out int statusCode)
         {
             statusCode = 0;
-            return 0;
         }
-        public static void UpdateFusen(JObject fusenData, out int statusCode)
+        public static void UpdateFusen(int accountID, int fusenID, JObject fusenData, out int statusCode)
         {
             statusCode = 0;
         }
