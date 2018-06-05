@@ -7,12 +7,12 @@ namespace KyomuServer
 {
     class sAccount  //アカウント情報を扱う
     {
-        static JObject AccountCreate(string accountID)
+        static JObject AccountCreate(JObject accountInfo)
         {
             return null;
         }
 
-        static JObject AccountRefer(string accountID)
+        static JObject AccountRefer(JObject accountInfo)
         {
             return null;
         }
