@@ -51,6 +51,7 @@ namespace KyomuServer
                             sFusen.GetFusenAllData(int.Parse(apiurl[2]));
                             break;
                         default:
+                            statusCode = 400;
                             break;
                     }
                     break;
@@ -70,14 +71,16 @@ namespace KyomuServer
                             sFusen.DeleteFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), out statusCode);
                             break;
                         default:
+                            statusCode = 400;
                             break;
                     }
                     break;
                 default:
+                    statusCode = 400;
                     break;
             }
 
-            
+            res.StatusCode = statusCode;
             res.Close();
         }
     }
