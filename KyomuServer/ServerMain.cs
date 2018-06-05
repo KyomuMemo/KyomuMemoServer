@@ -11,6 +11,7 @@ namespace KyomuServer
         {
             Console.WriteLine("Hello World!");
             var listner = new HttpListener();
+            
             var json = new JObject();//これがjson
             var jvar = new JValue("hoge"); //jsonの数値
             var jary = new JArray();//jsonの配列
