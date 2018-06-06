@@ -21,14 +21,16 @@ namespace KyomuServer
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            var listner = new HttpListener();
+            //var listner = new HttpListener();
             
             var json = new JObject();//これがjson
             var jvar = new JValue("hoge"); //jsonの数値
             var jary = new JArray();//jsonの配列
         }
 
-        void httpprocede(HttpListenerContext context)
+
+
+        static void SendInfo(HttpListenerContext context)
         {
             var req = context.Request;
             var res = context.Response;
@@ -63,6 +65,9 @@ namespace KyomuServer
                             break;
                         case "get":
                             sFusen.GetFusenAllData(int.Parse(apiurl[2]));
+                            var json = JObject.Parse(Fsample);
+                            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(json.ToString());
+                            ostr.Write(buffer, 0, buffer.Length);
                             break;
                         case "update":
                             sFusen.UpdateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), null, out statusCode);
@@ -83,5 +88,15 @@ namespace KyomuServer
             res.StatusCode = statusCode;
             res.Close();
         }
+
+
+        const string Fsample = @"{
+            ""userID"" : 888,
+            ""fusenID"" : 666,
+            ""title"" : ""すごいメモ"",
+            ""tag"" : [ ""sugosa"" , ""仰天"" ],
+            ""text"" : ""驚天動地奇想天外…～～～～"",
+            ""color"" : ""ffffff""
+        }";
     }
 }
