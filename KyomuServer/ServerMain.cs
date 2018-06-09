@@ -21,21 +21,38 @@ namespace KyomuServer
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            //var listner = new HttpListener();
-            
-            var json = new JObject();//これがjson
-            var jvar = new JValue("hoge"); //jsonの数値
-            var jary = new JArray();//jsonの配列
+            string[] url = { "http://localhost:2000/" };
+            SimpleLister(url);
         }
 
-
-
-        static void SendInfo(HttpListenerContext context)
+        static void SimpleLister(string[] prefixes)
         {
+            if (prefixes == null || prefixes.Length == 0)
+                throw new ArgumentException("prefixes");
+            var listner = new HttpListener();
+            foreach(var s in prefixes) listner.Prefixes.Add(s);
+            bool tudukeruFlag = true;
+            listner.Start();
+            while (tudukeruFlag)
+            {
+                var cxt = listner.GetContext();
+                tudukeruFlag = SendInfo(cxt);
+            }
+            listner.Stop();
+        }
+
+        static bool SendInfo(HttpListenerContext context)
+        {
+            bool flag = true;
             var req = context.Request;
             var res = context.Response;
             var ostr = res.OutputStream;
             int statusCode = 440;
+            void writemessage(string str)
+            {
+                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(str);
+                ostr.Write(buffer, 0, buffer.Length);
+            }
 
             var apiurl = req.RawUrl.Split("/");
             switch (apiurl[1])
@@ -54,6 +71,7 @@ namespace KyomuServer
                             break;
                         default:
                             statusCode = 400;
+                            writemessage("<HTML><BODY> afun </BODY></HTML>");
                             break;
                     }
                     break;
@@ -65,9 +83,8 @@ namespace KyomuServer
                             break;
                         case "get":
                             sFusen.GetFusenAllData(int.Parse(apiurl[2]));
-                            var json = JObject.Parse(Fsample);
-                            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(json.ToString());
-                            ostr.Write(buffer, 0, buffer.Length);
+                            var json = JObject.Parse(ServerTest01.Fsample);
+                            writemessage(json.ToString());
                             break;
                         case "update":
                             sFusen.UpdateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), null, out statusCode);
@@ -81,22 +98,18 @@ namespace KyomuServer
                     }
                     break;
                 default:
-                    statusCode = 400;
+                    statusCode = 440;
+                    writemessage("<HTML><BODY> Hello, world</BODY></HTML>");
+                    flag = false;
                     break;
             }
 
             res.StatusCode = statusCode;
             res.Close();
+            return flag;
         }
 
 
-        const string Fsample = @"{
-            ""userID"" : 888,
-            ""fusenID"" : 666,
-            ""title"" : ""すごいメモ"",
-            ""tag"" : [ ""sugosa"" , ""仰天"" ],
-            ""text"" : ""驚天動地奇想天外…～～～～"",
-            ""color"" : ""ffffff""
-        }";
+
     }
 }
