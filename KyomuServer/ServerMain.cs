@@ -61,13 +61,13 @@ namespace KyomuServer
                     switch (apiurl[3])
                     {
                         case "create":
-                            sAccount.AccountCreate(null,out statusCode);
+                            writemessage(sAccount.AccountCreate(null, out statusCode).ToString());
                             break;
                         case "getid":
-                            sAccount.AccountRefer(null,out statusCode);
+                            writemessage(sAccount.AccountRefer(null,out statusCode).ToString());
                             break;
                         case "getmemoall":
-                            sFusen.GetFusenAllData(int.Parse(apiurl[2]));
+                            writemessage(sFusen.GetFusenAllData(int.Parse(apiurl[2])).ToString());
                             break;
                         default:
                             statusCode = 400;
@@ -82,9 +82,7 @@ namespace KyomuServer
                             sFusen.CreateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), out statusCode);
                             break;
                         case "get":
-                            sFusen.GetFusenAllData(int.Parse(apiurl[2]));
-                            var json = JObject.Parse(ServerTest01.Fsample);
-                            writemessage(json.ToString());
+                            writemessage(sFusen.GetFusenAllData(int.Parse(apiurl[2])).ToString());
                             break;
                         case "update":
                             sFusen.UpdateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), null, out statusCode);

@@ -19,7 +19,7 @@ namespace KyomuServer
             }
         }
         public const string EMess = @"{
-            ""message"" : ""IDが存在しないなどのエラー""
+            ""message"" : ""error""
         }";
         public const string Fsample = @"{
             ""userID"" : 888,
