@@ -3,20 +3,27 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
-namespace KyomuServer
+namespace KyomuServerMock
 {
-    class ServerTest01
+    class sFusem
     {
-        public JObject getid(JObject json,out int sc)
+        public static JToken GetFusenAllData(int accountID)
         {
-            if (json["userName"].Value<string>() == "ultraman")
-            {
-                sc = 200; return JObject.Parse(Asample);
-            }
-            else
-            {
-                sc = 440; return JObject.Parse(EMess);
-            }
+            if (accountID == 888) return JArray.Parse(Lsample);
+            else return JObject.Parse(EMess);
+        }
+        public static void CreateFusen(int accountID, int fusenID, out int statusCode)
+        {
+            if (accountID == 888 && fusenID != 666) statusCode = 200;
+            else statusCode = 440;
+        }
+        public static void UpdateFusen(int accountID, int fusenID, JObject fusenData, out int statusCode)
+        {
+            statusCode = 0;
+        }
+        public static void DeleteFusen(int accountID, int fusenID, out int statusCode)
+        {
+            statusCode = 0;
         }
         public const string EMess = @"{
             ""message"" : ""error""
@@ -28,14 +35,6 @@ namespace KyomuServer
             ""tag"" : [ ""sugosa"" , ""仰天"" ],
             ""text"" : ""驚天動地奇想天外…～～～～"",
             ""color"" : ""ffffff""
-        }";
-        public const string Asample = @"{
-            ""userID"" : 888,
-            ""userName"" : ""ultraman""
-        }";
-        public const string Asample2 = @"{
-            ""userID"" : 999,
-            ""userName"" : ""ultranohaha""
         }";
         public static string Lsample = @" [
                 {
