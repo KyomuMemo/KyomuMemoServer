@@ -47,7 +47,7 @@ namespace KyomuServer
             var req = context.Request;
             var res = context.Response;
             var ostr = res.OutputStream;
-            int statusCode = 440;
+            int statusCode;
             void writemessage(string str)
             {
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(str);
@@ -61,16 +61,18 @@ namespace KyomuServer
                     switch (apiurl[3])
                     {
                         case "create":
-                            writemessage(sAccount.AccountCreate(null, out statusCode).ToString());
+                            writemessage(sAccount.AccountCreate(apiurl[2], out statusCode).ToString());
                             break;
                         case "getid":
-                            writemessage(sAccount.AccountRefer(null,out statusCode).ToString());
+                            writemessage(sAccount.AccountRefer(apiurl[2],out statusCode).ToString());
                             break;
                         case "getmemoall":
-                            writemessage(sFusen.GetFusenAllData(int.Parse(apiurl[2])).ToString());
+                            var accountInfo = sAccount.AccountRefer(apiurl[2], out statusCode);
+                            if (statusCode == 200) writemessage(sFusen.GetFusenAllData(accountInfo["userID"].Value<int>(), out statusCode).ToString());
+                            else writemessage(accountInfo.ToString());
                             break;
                         default:
-                            statusCode = 400;
+                            statusCode = 404;
                             writemessage("<HTML><BODY> afun </BODY></HTML>");
                             break;
                     }
@@ -82,7 +84,7 @@ namespace KyomuServer
                             sFusen.CreateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), out statusCode);
                             break;
                         case "get":
-                            writemessage(sFusen.GetFusenAllData(int.Parse(apiurl[2])).ToString());
+                            writemessage(sFusen.GetFusenAllData(int.Parse(apiurl[2]),out statusCode).ToString());
                             break;
                         case "update":
                             sFusen.UpdateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), null, out statusCode);
@@ -91,12 +93,12 @@ namespace KyomuServer
                             sFusen.DeleteFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), out statusCode);
                             break;
                         default:
-                            statusCode = 400;
+                            statusCode = 404;
                             break;
                     }
                     break;
                 default:
-                    statusCode = 440;
+                    statusCode = 404;
                     writemessage("<HTML><BODY> Hello, world</BODY></HTML>");
                     flag = false;
                     break;

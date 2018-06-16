@@ -3,32 +3,44 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
-namespace KyomuServerMock
+namespace KyomuServer
 {
-    class sFusem
+    namespace Mock
     {
-        public static JToken GetFusenAllData(int accountID)
+        class sFusem
         {
-            if (accountID == 888) return JArray.Parse(Lsample);
-            else return JObject.Parse(EMess);
-        }
-        public static void CreateFusen(int accountID, int fusenID, out int statusCode)
-        {
-            if (accountID == 888 && fusenID != 666) statusCode = 200;
-            else statusCode = 440;
-        }
-        public static void UpdateFusen(int accountID, int fusenID, JObject fusenData, out int statusCode)
-        {
-            statusCode = 0;
-        }
-        public static void DeleteFusen(int accountID, int fusenID, out int statusCode)
-        {
-            statusCode = 0;
-        }
-        public const string EMess = @"{
+            public static JToken GetFusenAllData(int accountID, out int statusCode)
+            {
+                if (accountID == 888)
+                {
+                    statusCode = 200;
+                    return JArray.Parse(Lsample);
+                }
+                else
+                {
+                    statusCode = 409;
+                    return JObject.Parse(EMess);
+                }
+            }
+            public static void CreateFusen(int accountID, int fusenID, out int statusCode)
+            {
+                if (accountID == 888 && fusenID != 666) statusCode = 200;
+                else statusCode = 409;
+            }
+            public static void UpdateFusen(int accountID, int fusenID, JObject fusenData, out int statusCode)
+            {
+                if (accountID == 888 && fusenID == 666) statusCode = 200;
+                else statusCode = 409;
+            }
+            public static void DeleteFusen(int accountID, int fusenID, out int statusCode)
+            {
+                if (accountID == 888 && fusenID == 666) statusCode = 200;
+                else statusCode = 409;
+            }
+            public const string EMess = @"{
             ""message"" : ""error""
         }";
-        public const string Fsample = @"{
+            public const string Fsample = @"{
             ""userID"" : 888,
             ""fusenID"" : 666,
             ""title"" : ""すごいメモ"",
@@ -36,7 +48,7 @@ namespace KyomuServerMock
             ""text"" : ""驚天動地奇想天外…～～～～"",
             ""color"" : ""ffffff""
         }";
-        public static string Lsample = @" [
+            public static string Lsample = @" [
                 {
                     ""userID"" : 888,
                     ""fusenID"" : 666,
@@ -54,5 +66,6 @@ namespace KyomuServerMock
                     ""color"" : ""ffffff""
                 }
             ]";//配列の形で返しているが配列に名前を付けてネストさせた方が良いか悩む
+        }
     }
 }

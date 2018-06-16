@@ -9,8 +9,9 @@ namespace KyomuServer
     {
         public static string Connection { set { Connection = value; } get { return Connection; } }
 
-        public static JObject GetFusenAllData(int accountID)
+        public static JToken GetFusenAllData(int accountID , out int statusCode)
         {
+            statusCode = 400;
             return null;
         }
 

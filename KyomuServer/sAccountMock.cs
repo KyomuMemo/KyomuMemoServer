@@ -3,46 +3,49 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
-namespace KyomuServerMock
+namespace KyomuServer
 {
-    class sAccount
+    namespace Mock
     {
-        public static JObject AccountRefer(JObject json, out int sc)
+        class sAccount
         {
-            if (json["userName"].Value<string>() == "ultraman")
+            public static JObject AccountRefer(string accountName, out int sc)
             {
-                sc = 200; return JObject.Parse(Asample);
+                if (accountName == "ultraman")
+                {
+                    sc = 200; return JObject.Parse(Asample);
+                }
+                else
+                {
+                    sc = 409; return JObject.Parse(EMess);
+                }
             }
-            else
-            {
-                sc = 440; return JObject.Parse(EMess);
-            }
-        }
 
-        public static JObject AccountCreate(JObject accountInfo, out int statusCode)
-        {
-            if (accountInfo["userName"].Value<string>() != "ultraman")
+            public static JObject AccountCreate(string accountName, out int statusCode)
             {
-                statusCode = 440; return JObject.Parse(EMess);
+                if (accountName != "ultraman")
+                {
+                    statusCode = 409; return JObject.Parse(EMess);
+                }
+                else
+                {
+                    statusCode = 200; var json = JObject.Parse(Asample);
+                    json["userName"].Replace(accountName);
+                    return json;
+                }
             }
-            else
-            {
-                statusCode = 200; var json = JObject.Parse(Asample);
-                json["userName"].Replace(accountInfo["userName"]);
-                return json;
-            }
-        }
 
-        public const string Asample = @"{
+            public const string Asample = @"{
             ""userID"" : 888,
             ""userName"" : ""ultraman""
         }";
-        public const string Asample2 = @"{
+            public const string Asample2 = @"{
             ""userID"" : 999,
             ""userName"" : ""ultranohaha""
         }";
-        public const string EMess = @"{
+            public const string EMess = @"{
             ""message"" : ""error""
         }";
+        }
     }
 }
