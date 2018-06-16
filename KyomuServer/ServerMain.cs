@@ -55,61 +55,72 @@ namespace KyomuServer
             }
 
             var apiurl = req.RawUrl.Split("/");
-            switch (apiurl[1])
-            {
-                case "account":
-                    switch (apiurl[3])
-                    {
-                        case "create":
-                            writemessage(sAccount.AccountCreate(apiurl[2], out statusCode).ToString());
-                            break;
-                        case "getid":
-                            writemessage(sAccount.AccountRefer(apiurl[2],out statusCode).ToString());
-                            break;
-                        case "getmemoall":
-                            var accountInfo = sAccount.AccountRefer(apiurl[2], out statusCode);
-                            if (statusCode == 200) writemessage(sFusen.GetFusenAllData(accountInfo["userID"].Value<int>(), out statusCode).ToString());
-                            else writemessage(accountInfo.ToString());
-                            break;
-                        default:
-                            statusCode = 404;
-                            writemessage("<HTML><BODY> afun </BODY></HTML>");
-                            break;
-                    }
-                    break;
-                case "memo":
-                    switch (apiurl[4])
-                    {
-                        case "create":
-                            sFusen.CreateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), out statusCode);
-                            break;
-                        case "get":
-                            writemessage(sFusen.GetFusenAllData(int.Parse(apiurl[2]),out statusCode).ToString());
-                            break;
-                        case "update":
-                            sFusen.UpdateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), null, out statusCode);
-                            break;
-                        case "delete":
-                            sFusen.DeleteFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), out statusCode);
-                            break;
-                        default:
-                            statusCode = 404;
-                            break;
-                    }
-                    break;
-                default:
-                    statusCode = 404;
-                    writemessage("<HTML><BODY> Hello, world</BODY></HTML>");
-                    flag = false;
-                    break;
-            }
+            if (apiurl.Length > 1)
+                switch (apiurl[1])
+                {
+                    case "account":
+                        if (apiurl.Length == 4)
+                            switch (apiurl[3])
+                            {
+                                case "create":
+                                    writemessage(Mock.sAccount.AccountCreate(apiurl[2], out statusCode).ToString());
+                                    break;
+                                case "getid":
+                                    writemessage(Mock.sAccount.AccountRefer(apiurl[2], out statusCode).ToString());
+                                    break;
+                                case "getmemoall":
+                                    var accountInfo = Mock.sAccount.AccountRefer(apiurl[2], out statusCode);
+                                    if (statusCode == 200) writemessage(Mock.sFusen.GetFusenAllData(accountInfo["userID"].Value<int>(), out statusCode).ToString());
+                                    else writemessage(accountInfo.ToString());
+                                    break;
+                                default:
+                                    statusCode = 404;
+                                    writemessage("<HTML><BODY> afun </BODY></HTML>");
+                                    break;
+                            }
+                        else statusCode = 404;
+                        break;
+                    case "memo":
+                        if (apiurl.Length == 5)
+                            switch (apiurl[4])
+                            {
+                                case "create":
+                                    Mock.sFusen.CreateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), out statusCode);
+                                    break;
+                                case "get":
+                                    writemessage(Mock.sFusen.GetFusenAllData(int.Parse(apiurl[2]), out statusCode).ToString());
+                                    break;
+                                case "update":
+                                    try {
+                                        var reader = new System.IO.StreamReader(req.InputStream);
+                                        var body = reader.ReadToEnd();
+                                        Mock.sFusen.UpdateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), JObject.Parse(body), out statusCode);
+                                    }
+                                    catch (Newtonsoft.Json.JsonReaderException e) {
+                                        writemessage(e.Message);
+                                        statusCode = 406;
+                                    }
+                                    break;
+                                case "delete":
+                                    Mock.sFusen.DeleteFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), out statusCode);
+                                    break;
+                                default:
+                                    statusCode = 404;
+                                    break;
+                            }
+                        else statusCode = 404;
+                        break;
+                    default:
+                        statusCode = 404;
+                        writemessage("<HTML><BODY> Hello, world</BODY></HTML>");
+                        flag = false;//暫定的に終了のためのコマンドとして使っている
+                        break;
+                }
+            else statusCode = 404;
 
             res.StatusCode = statusCode;
             res.Close();
             return flag;
         }
-
-
-
     }
 }

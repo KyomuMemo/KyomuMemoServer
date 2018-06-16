@@ -7,7 +7,7 @@ namespace KyomuServer
 {
     namespace Mock
     {
-        class sFusem
+        class sFusen
         {
             public static JToken GetFusenAllData(int accountID, out int statusCode)
             {
@@ -18,24 +18,24 @@ namespace KyomuServer
                 }
                 else
                 {
-                    statusCode = 409;
+                    statusCode = 400;
                     return JObject.Parse(EMess);
                 }
             }
             public static void CreateFusen(int accountID, int fusenID, out int statusCode)
             {
                 if (accountID == 888 && fusenID != 666) statusCode = 200;
-                else statusCode = 409;
+                else statusCode = 400;
             }
             public static void UpdateFusen(int accountID, int fusenID, JObject fusenData, out int statusCode)
             {
                 if (accountID == 888 && fusenID == 666) statusCode = 200;
-                else statusCode = 409;
+                else statusCode = 400;
             }
             public static void DeleteFusen(int accountID, int fusenID, out int statusCode)
             {
                 if (accountID == 888 && fusenID == 666) statusCode = 200;
-                else statusCode = 409;
+                else statusCode = 400;
             }
             public const string EMess = @"{
             ""message"" : ""error""

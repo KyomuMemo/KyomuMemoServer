@@ -17,7 +17,7 @@ namespace KyomuServer
                 }
                 else
                 {
-                    sc = 409; return JObject.Parse(EMess);
+                    sc = 400; return JObject.Parse(EMess);
                 }
             }
 
@@ -25,13 +25,13 @@ namespace KyomuServer
             {
                 if (accountName != "ultraman")
                 {
-                    statusCode = 409; return JObject.Parse(EMess);
-                }
-                else
-                {
                     statusCode = 200; var json = JObject.Parse(Asample);
                     json["userName"].Replace(accountName);
                     return json;
+                }
+                else
+                {
+                    statusCode = 400; return JObject.Parse(EMess);
                 }
             }
 
