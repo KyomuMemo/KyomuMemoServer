@@ -58,7 +58,7 @@ namespace KyomuServer
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(str);
                 ostr.Write(buffer, 0, buffer.Length);
             } 
-
+            res.AddHeader("Access-Control-Allow-Origin","*");
             var apiurl = req.RawUrl.Split("/");
             if (apiurl.Length > 1)
                 switch (apiurl[1])
