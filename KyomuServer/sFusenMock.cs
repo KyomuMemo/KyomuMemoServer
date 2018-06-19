@@ -43,7 +43,7 @@ namespace KyomuServer
                 statusCode = 400;
                 foreach(var f in fusens) { if (fusenID == f.fusenID && accountID == f.userID) { statusCode = 409; return JObject.Parse(EMess); } }
                 statusCode = 200; fusens.Add(new Data(accountID, fusenID));
-                return JObject.Parse(@"{""userID"":""" + accountID + @""",fusenID:" + fusenID + @"""}");
+                return fusenjson(accountID,fusenID);
             }
 
             public JObject UpdateFusen(int accountID, int fusenID, JObject fusenData, out int statusCode)
@@ -73,14 +73,20 @@ namespace KyomuServer
                     {
                         fusens.RemoveAt(i);
                         statusCode = 200;
+                        return fusenjson(accountID,fusenID);
                     }
                 }
-                if (statusCode == 200) return null;
-                else return JObject.Parse(EMess);
+                return JObject.Parse(EMess);
             }
 
 
-
+            public JObject fusenjson(int userID, int fusenID)
+            {
+                var json = new JObject();
+                json.Add("userID", new JValue(userID));
+                json.Add("fusenID", new JValue(fusenID));
+                return json;
+            }
 
 
 

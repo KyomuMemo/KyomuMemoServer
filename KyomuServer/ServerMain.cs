@@ -18,10 +18,13 @@ namespace KyomuServer
 {
     class ServerMain
     {
+        static Mock.sAccount mAccount; static Mock.sFusen mFusen;
+
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
             string[] url = { "http://localhost:2000/" };
+            mAccount = new Mock.sAccount(); mFusen = new Mock.sFusen(); //デバッグ用モック
             SimpleLister(url);
         }
 
@@ -41,6 +44,8 @@ namespace KyomuServer
             listner.Stop();
         }
 
+
+
         static bool SendInfo(HttpListenerContext context)
         {
             bool flag = true;
@@ -52,9 +57,7 @@ namespace KyomuServer
             {
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(str);
                 ostr.Write(buffer, 0, buffer.Length);
-            }
-
-            var mAccount = new Mock.sAccount(); var mFusen = new Mock.sFusen(); //デバッグ用モック
+            } 
 
             var apiurl = req.RawUrl.Split("/");
             if (apiurl.Length > 1)
@@ -115,7 +118,7 @@ namespace KyomuServer
                     default:
                         statusCode = 404;
                         writemessage("<HTML><BODY> Hello, world</BODY></HTML>");
-                        flag = false;//暫定的に終了のためのコマンドとして使っている
+                        //flag = false;//暫定的に終了のためのコマンドとして使っている
                         break;
                 }
             else statusCode = 404;
