@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace KyomuServer
 {
@@ -9,37 +10,85 @@ namespace KyomuServer
     {
         class sFusen
         {
-            public static JToken GetFusenAllData(int accountID, out int statusCode)
+            List<Data> fusens;
+            public sFusen()
             {
-                if (accountID == 888)
+                fusens = new List<Data>();
+            }
+
+            public  JToken GetFusenAllData(int accountID, out int statusCode)
+            {
+                var jar = new JArray();
+                statusCode = 200;
+                foreach(Data f in fusens)
                 {
-                    statusCode = 200;
-                    return JArray.Parse(Lsample);
+                    if (f.userID == accountID)
+                    {
+                        var fusen = new JObject();
+                        statusCode = 200;
+                        fusen.Add("userID", new JValue(f.userID));
+                        fusen.Add("fusenID", new JValue(f.fusenID));
+                        fusen.Add("title", new JValue(f.title));
+                        fusen.Add("tag", new JArray(f.tag));
+                        fusen.Add("text", new JValue(f.text));
+                        fusen.Add("color", new JValue(f.color));
+                        jar.Add(fusen);
+                    }
                 }
-                else
+                //if (statusCode != 200) return JObject.Parse(EMess);
+                return jar;
+            }
+            public JObject CreateFusen(int accountID, int fusenID, out int statusCode)
+            {
+                statusCode = 400;
+                foreach(var f in fusens) { if (fusenID == f.fusenID && accountID == f.userID) { statusCode = 409; return JObject.Parse(EMess); } }
+                statusCode = 200; fusens.Add(new Data(accountID, fusenID));
+                return JObject.Parse(@"{""userID"":""" + accountID + @""",fusenID:" + fusenID + @"""}");
+            }
+
+            public JObject UpdateFusen(int accountID, int fusenID, JObject fusenData, out int statusCode)
+            {
+                statusCode = 409;
+                foreach(var f in fusens)
                 {
-                    statusCode = 400;
-                    return JObject.Parse(EMess);
+                    if (f.fusenID == fusenID && f.userID == accountID)
+                    {
+                        f.title = fusenData["title"].Value<string>();
+                        f.tag = fusenData["tag"].ToObject<string[]>();
+                        f.text = fusenData["text"].Value<string>();
+                        f.color = fusenData["color"].Value<string>();
+                        statusCode = 200;
+                    }
                 }
+                if (statusCode == 200) return fusenData;
+                else return JObject.Parse(EMess);
             }
-            public static void CreateFusen(int accountID, int fusenID, out int statusCode)
+
+            public JObject DeleteFusen(int accountID, int fusenID, out int statusCode)
             {
-                if (accountID == 888 && fusenID != 666) statusCode = 200;
-                else statusCode = 400;
+                statusCode = 409;
+                for(int i=0;i<fusens.Count;i++)
+                {
+                    if(fusens[i].fusenID==fusenID && fusens[i].userID == accountID)
+                    {
+                        fusens.RemoveAt(i);
+                        statusCode = 200;
+                    }
+                }
+                if (statusCode == 200) return null;
+                else return JObject.Parse(EMess);
             }
-            public static void UpdateFusen(int accountID, int fusenID, JObject fusenData, out int statusCode)
-            {
-                if (accountID == 888 && fusenID == 666) statusCode = 200;
-                else statusCode = 400;
-            }
-            public static void DeleteFusen(int accountID, int fusenID, out int statusCode)
-            {
-                if (accountID == 888 && fusenID == 666) statusCode = 200;
-                else statusCode = 400;
-            }
+
+
+
+
+
+
+
+
             public const string EMess = @"{
             ""message"" : ""error""
-        }";
+            }";
             public const string Fsample = @"{
             ""userID"" : 888,
             ""fusenID"" : 666,
@@ -47,7 +96,7 @@ namespace KyomuServer
             ""tag"" : [ ""sugosa"" , ""仰天"" ],
             ""text"" : ""驚天動地奇想天外…～～～～"",
             ""color"" : ""ffffff""
-        }";
+            }";
             public static string Lsample = @" [
                 {
                     ""userID"" : 888,

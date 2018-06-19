@@ -54,6 +54,8 @@ namespace KyomuServer
                 ostr.Write(buffer, 0, buffer.Length);
             }
 
+            var mAccount = new Mock.sAccount(); var mFusen = new Mock.sFusen(); //デバッグ用モック
+
             var apiurl = req.RawUrl.Split("/");
             if (apiurl.Length > 1)
                 switch (apiurl[1])
@@ -63,14 +65,14 @@ namespace KyomuServer
                             switch (apiurl[3])
                             {
                                 case "create":
-                                    writemessage(Mock.sAccount.AccountCreate(apiurl[2], out statusCode).ToString());
+                                    writemessage(mAccount.AccountCreate(apiurl[2], out statusCode).ToString());
                                     break;
                                 case "getid":
-                                    writemessage(Mock.sAccount.AccountRefer(apiurl[2], out statusCode).ToString());
+                                    writemessage(mAccount.AccountRefer(apiurl[2], out statusCode).ToString());
                                     break;
                                 case "getmemoall":
-                                    var accountInfo = Mock.sAccount.AccountRefer(apiurl[2], out statusCode);
-                                    if (statusCode == 200) writemessage(Mock.sFusen.GetFusenAllData(accountInfo["userID"].Value<int>(), out statusCode).ToString());
+                                    var accountInfo = mAccount.AccountRefer(apiurl[2], out statusCode);
+                                    if (statusCode == 200) writemessage(mFusen.GetFusenAllData(accountInfo["userID"].Value<int>(), out statusCode).ToString());
                                     else writemessage(accountInfo.ToString());
                                     break;
                                 default:
@@ -85,16 +87,16 @@ namespace KyomuServer
                             switch (apiurl[4])
                             {
                                 case "create":
-                                    Mock.sFusen.CreateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), out statusCode);
+                                    writemessage(mFusen.CreateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), out statusCode).ToString());
                                     break;
                                 case "get":
-                                    writemessage(Mock.sFusen.GetFusenAllData(int.Parse(apiurl[2]), out statusCode).ToString());
+                                    writemessage(mFusen.GetFusenAllData(int.Parse(apiurl[2]), out statusCode).ToString());
                                     break;
                                 case "update":
                                     try {
                                         var reader = new System.IO.StreamReader(req.InputStream);
                                         var body = reader.ReadToEnd();
-                                        Mock.sFusen.UpdateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), JObject.Parse(body), out statusCode);
+                                        writemessage( mFusen.UpdateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), JObject.Parse(body), out statusCode).ToString());
                                     }
                                     catch (Newtonsoft.Json.JsonReaderException e) {
                                         writemessage(e.Message);
@@ -102,7 +104,7 @@ namespace KyomuServer
                                     }
                                     break;
                                 case "delete":
-                                    Mock.sFusen.DeleteFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), out statusCode);
+                                    writemessage(mFusen.DeleteFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), out statusCode)?.ToString());
                                     break;
                                 default:
                                     statusCode = 404;
