@@ -7,23 +7,26 @@ namespace KyomuServer
 {
     class sFusen //付箋情報を扱う
     {
-        static JObject GetFusenData(string accountID)
-        {
+        public static string Connection { set { Connection = value; } get { return Connection; } }
 
+        public static JObject GetFusenData(string accountID)
+        {
+            return null;
         }
 
 
-        static int CreateFusen(int accountID, out int statusCode)
+        public static int CreateFusen(int accountID, out int statusCode)
         {
-
+            statusCode = 0;
+            return 0;
         }
-        static void UpdateFusen(JObject fusenData, out int statusCode)
+        public static void UpdateFusen(JObject fusenData, out int statusCode)
         {
-
+            statusCode = 0;
         }
-        static void DeleteFusen(int accountID,int fusenID, out int statusCode)
+        public static void DeleteFusen(int accountID,int fusenID, out int statusCode)
         {
-
+            statusCode = 0;
         }
 
     }
