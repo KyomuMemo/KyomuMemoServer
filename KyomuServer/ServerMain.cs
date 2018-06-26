@@ -58,7 +58,6 @@ namespace KyomuServer
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(str);
                 ostr.Write(buffer, 0, buffer.Length);
             }
-
             await Task.Run(() =>
             {
                 var apiurl = req.RawUrl.Split("/");
