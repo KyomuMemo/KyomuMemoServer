@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 
 
 
+
 using System.Text;
 
 
@@ -186,6 +187,26 @@ namespace ConsoleApplication
         
             int aa = 0;
             KyomuServer.sAccount.AccountCreate("hashas", out aa);
+            Console.WriteLine(aa);
+            KyomuServer.sAccount.AccountRefer("ytytyty", out aa);
+            Console.WriteLine(aa);
+            Console.ReadLine();
+        }
+    }
+}
+
+
+
+namespace ConsoleApplication
+{
+    public class Program
+    {
+
+        public static void Main(string[] args)
+        {
+
+            int aa = 0;
+            KyomuServer.sAccount.AccountCreate("yyyy", out aa);
             Console.WriteLine(aa);
             KyomuServer.sAccount.AccountRefer("ytytyty", out aa);
             Console.WriteLine(aa);
