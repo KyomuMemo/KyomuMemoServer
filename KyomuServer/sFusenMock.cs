@@ -16,7 +16,7 @@ namespace KyomuServer
                 fusens = new List<Data>();
             }
 
-            public  JToken GetFusenAllData(int accountID, out int statusCode)
+            public  JToken GetFusenAllData(string accountID, out int statusCode)
             {
                 var jar = new JArray();
                 statusCode = 200;
@@ -38,15 +38,16 @@ namespace KyomuServer
                 //if (statusCode != 200) return JObject.Parse(EMess);
                 return jar;
             }
-            public JObject CreateFusen(int accountID, int fusenID, out int statusCode)
+            public JObject CreateFusen(string accountID, string fusenID, out int statusCode)
             {
                 statusCode = 400;
-                foreach(var f in fusens) { if (fusenID == f.fusenID && accountID == f.userID) { statusCode = 409; return JObject.Parse(EMess); } }
+                //foreach(var f in fusens) { if (fusenID == f.fusenID && accountID == f.userID) { statusCode = 409; return JObject.Parse(EMess); } }
+                fusenID = Guid.NewGuid().ToString("N").Substring(0, 12);
                 statusCode = 200; fusens.Add(new Data(accountID, fusenID));
                 return fusenjson(accountID,fusenID);
             }
 
-            public JObject UpdateFusen(int accountID, int fusenID, JObject fusenData, out int statusCode)
+            public JObject UpdateFusen(string accountID, string fusenID, JObject fusenData, out int statusCode)
             {
                 statusCode = 409;
                 foreach(var f in fusens)
@@ -64,7 +65,7 @@ namespace KyomuServer
                 else return JObject.Parse(EMess);
             }
 
-            public JObject DeleteFusen(int accountID, int fusenID, out int statusCode)
+            public JObject DeleteFusen(string accountID, string fusenID, out int statusCode)
             {
                 statusCode = 409;
                 for(int i=0;i<fusens.Count;i++)
@@ -80,7 +81,7 @@ namespace KyomuServer
             }
 
 
-            public JObject fusenjson(int userID, int fusenID)
+            public JObject fusenjson(string userID, string fusenID)
             {
                 var json = new JObject();
                 json.Add("userID", new JValue(userID));

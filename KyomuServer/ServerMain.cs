@@ -77,7 +77,7 @@ namespace KyomuServer
                                         break;
                                     case "getmemoall":
                                         var accountInfo = mAccount.AccountRefer(apiurl[2], out statusCode);
-                                        if (statusCode == 200) writemessage(mFusen.GetFusenAllData(accountInfo["userID"].Value<int>(), out statusCode).ToString());
+                                        if (statusCode == 200) writemessage(mFusen.GetFusenAllData(accountInfo["userID"].Value<string>(), out statusCode).ToString());
                                         else writemessage(accountInfo.ToString());
                                         break;
                                     default:
@@ -92,17 +92,17 @@ namespace KyomuServer
                                 switch (apiurl[4])
                                 {
                                     case "create":
-                                        writemessage(mFusen.CreateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), out statusCode).ToString());
+                                        writemessage(mFusen.CreateFusen(apiurl[2], apiurl[3], out statusCode).ToString());
                                         break;
                                     case "get":
-                                        writemessage(mFusen.GetFusenAllData(int.Parse(apiurl[2]), out statusCode).ToString());
+                                        writemessage(mFusen.GetFusenAllData(apiurl[2], out statusCode).ToString());
                                         break;
                                     case "update":
                                         try
                                         {
                                             var reader = new System.IO.StreamReader(req.InputStream);
                                             var body = reader.ReadToEnd();
-                                            writemessage(mFusen.UpdateFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), JObject.Parse(body), out statusCode).ToString());
+                                            writemessage(mFusen.UpdateFusen(apiurl[2], apiurl[3], JObject.Parse(body), out statusCode).ToString());
                                         }
                                         catch (Newtonsoft.Json.JsonReaderException e)
                                         {
@@ -111,7 +111,7 @@ namespace KyomuServer
                                         }
                                         break;
                                     case "delete":
-                                        writemessage(mFusen.DeleteFusen(int.Parse(apiurl[2]), int.Parse(apiurl[3]), out statusCode)?.ToString());
+                                        writemessage(mFusen.DeleteFusen(apiurl[2], apiurl[3], out statusCode)?.ToString());
                                         break;
                                     default:
                                         statusCode = 404;
@@ -130,6 +130,13 @@ namespace KyomuServer
             });
             
             res.Close();
+        }
+
+        public JObject messagejson(string message)
+        {
+            var json = new JObject();
+            json.Add("message", new JValue(message));
+            return json;
         }
     }
 }
