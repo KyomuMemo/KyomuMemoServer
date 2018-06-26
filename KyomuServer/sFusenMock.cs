@@ -44,7 +44,12 @@ namespace KyomuServer
                 //foreach(var f in fusens) { if (fusenID == f.fusenID && accountID == f.userID) { statusCode = 409; return JObject.Parse(EMess); } }
                 fusenID = Guid.NewGuid().ToString("N").Substring(0, 12);
                 statusCode = 200; fusens.Add(new Data(accountID, fusenID));
-                return fusenjson(accountID,fusenID);
+                var fusen = fusenjson(accountID, fusenID);
+                fusen.Add("title", new JValue(""));
+                fusen.Add("tag", new JArray());
+                fusen.Add("text", new JValue(""));
+                fusen.Add("color", new JValue(""));
+                return fusen;
             }
 
             public JObject UpdateFusen(string accountID, string fusenID, JObject fusenData, out int statusCode)
@@ -72,9 +77,14 @@ namespace KyomuServer
                 {
                     if(fusens[i].fusenID==fusenID && fusens[i].userID == accountID)
                     {
+                        var fusen = fusenjson(accountID, fusenID);
+                        fusen.Add("title", new JValue(fusens[i].title));
+                        fusen.Add("tag", new JArray(fusens[i].tag));
+                        fusen.Add("text", new JValue(fusens[i].text));
+                        fusen.Add("color", new JValue(fusens[i].color));
                         fusens.RemoveAt(i);
                         statusCode = 200;
-                        return fusenjson(accountID,fusenID);
+                        return fusen;
                     }
                 }
                 return JObject.Parse(EMess);
