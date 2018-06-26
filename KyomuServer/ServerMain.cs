@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 /*
 "<host>"--"/account/<username>/"--"create"
         |                       |-"getid"
-        |                       |-"getmemoall"
         |
         |-"/memo/<userid>/<memoid>/"--"create"
                                     |-"get"
@@ -58,6 +57,8 @@ namespace KyomuServer
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(str);
                 ostr.Write(buffer, 0, buffer.Length);
             }
+
+            res.AddHeader("Access-Control-Allow-Origin","*");
             await Task.Run(() =>
             {
                 var apiurl = req.RawUrl.Split("/");
@@ -74,17 +75,12 @@ namespace KyomuServer
                                     case "getid":
                                         writemessage(mAccount.AccountRefer(apiurl[2], out statusCode).ToString());
                                         break;
-                                    case "getmemoall":
-                                        var accountInfo = mAccount.AccountRefer(apiurl[2], out statusCode);
-                                        if (statusCode == 200) writemessage(mFusen.GetFusenAllData(accountInfo["userID"].Value<string>(), out statusCode).ToString());
-                                        else writemessage(accountInfo.ToString());
-                                        break;
                                     default:
                                         statusCode = 404;
-                                        writemessage("<HTML><BODY> afun </BODY></HTML>");
+                                        writemessage(messagejson("api error").ToString());
                                         break;
                                 }
-                            else statusCode = 404;
+                            else { statusCode = 404; writemessage(messagejson("api error").ToString()); }
                             break;
                         case "memo":
                             if (apiurl.Length == 5)
@@ -105,33 +101,34 @@ namespace KyomuServer
                                         }
                                         catch (Newtonsoft.Json.JsonReaderException e)
                                         {
-                                            writemessage(e.Message);
+                                            writemessage(messagejson(e.Message).ToString());
                                             statusCode = 406;
                                         }
                                         break;
                                     case "delete":
-                                        writemessage(mFusen.DeleteFusen(apiurl[2], apiurl[3], out statusCode)?.ToString());
+                                        writemessage(mFusen.DeleteFusen(apiurl[2], apiurl[3], out statusCode).ToString());
                                         break;
                                     default:
                                         statusCode = 404;
+                                        writemessage(messagejson("api error").ToString());
                                         break;
                                 }
-                            else statusCode = 404;
-                            break;
+                            else { statusCode = 404; writemessage(messagejson("api error").ToString()); }
+                                break;
                         default:
                             statusCode = 404;
-                            writemessage("<HTML><BODY> Hello, world</BODY></HTML>");
+                            writemessage(messagejson("api error").ToString());
                             //flag = false;//暫定的に終了のためのコマンドとして使っている
                             break;
                     }
-                else statusCode = 404;
+                else { statusCode = 404; writemessage(messagejson("api error").ToString()); }
                 res.StatusCode = statusCode;
             });
             
             res.Close();
         }
 
-        public JObject messagejson(string message)
+        public static JObject messagejson(string message)
         {
             var json = new JObject();
             json.Add("message", new JValue(message));
