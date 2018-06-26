@@ -41,13 +41,13 @@ namespace KyomuServer
                         return JObject.Parse(EMess);
                     }
                 }
-                var id = random.Next();
+                string id = Guid.NewGuid().ToString("N").Substring(0, 12);
                 users.Add(new User(accountName, id));
                 return userjson(id, accountName);
             }
 
 
-            public JObject userjson(int userID,string userName)
+            public JObject userjson(string userID,string userName)
             {
                 var json = new JObject();
                 json.Add("userID", new JValue(userID));
