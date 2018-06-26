@@ -20,14 +20,15 @@ namespace KyomuServer
             public JObject AccountRefer(string accountName, out int sc)
             {
                 sc = 409;
-                foreach(var ac in users)
+                var json = JObject.Parse(EMess);
+                foreach (var ac in users)
                 {
                     if (accountName == ac.Name)
                     {
-                        sc = 200; return userjson(ac.ID, ac.Name);
+                        sc = 201; json = userjson(ac.ID, ac.Name);
                     }
                 }
-                return JObject.Parse(EMess);
+                return json;
             }
 
             public JObject AccountCreate(string accountName, out int statusCode)
