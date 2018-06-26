@@ -52,6 +52,7 @@ namespace KyomuServer
             var res = context.Response;
             var ostr = res.OutputStream;
             int statusCode;
+            string message;
             void writemessage(string str)
             {
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(str);
@@ -70,59 +71,61 @@ namespace KyomuServer
                                 switch (apiurl[3])
                                 {
                                     case "create":
-                                        writemessage(mAccount.AccountCreate(apiurl[2], out statusCode).ToString());
+                                        
+                                        message = mAccount.AccountCreate(apiurl[2], out statusCode).ToString();
                                         break;
                                     case "getid":
-                                        writemessage(mAccount.AccountRefer(apiurl[2], out statusCode).ToString());
+                                        message = mAccount.AccountRefer(apiurl[2], out statusCode).ToString();
                                         break;
                                     default:
                                         statusCode = 404;
-                                        writemessage(messagejson("api error").ToString());
+                                    message = messagejson("api error").ToString();
                                         break;
                                 }
-                            else { statusCode = 404; writemessage(messagejson("api error").ToString()); }
+                            else { statusCode = 404; message = messagejson("api error").ToString(); }
                             break;
                         case "memo":
                             if (apiurl.Length == 5)
                                 switch (apiurl[4])
                                 {
                                     case "create":
-                                        writemessage(mFusen.CreateFusen(apiurl[2], apiurl[3], out statusCode).ToString());
+                                        message = mFusen.CreateFusen(apiurl[2], apiurl[3], out statusCode).ToString();
                                         break;
                                     case "get":
-                                        writemessage(mFusen.GetFusenAllData(apiurl[2], out statusCode).ToString());
+                                        message = mFusen.GetFusenAllData(apiurl[2], out statusCode).ToString();
                                         break;
                                     case "update":
                                         try
                                         {
                                             var reader = new System.IO.StreamReader(req.InputStream);
                                             var body = reader.ReadToEnd();
-                                            writemessage(mFusen.UpdateFusen(apiurl[2], apiurl[3], JObject.Parse(body), out statusCode).ToString());
+                                            message=mFusen.UpdateFusen(apiurl[2], apiurl[3], JObject.Parse(body), out statusCode).ToString();
                                         }
                                         catch (Newtonsoft.Json.JsonReaderException e)
                                         {
-                                            writemessage(messagejson(e.Message).ToString());
+                                            message = messagejson(e.Message).ToString();
                                             statusCode = 406;
                                         }
                                         break;
                                     case "delete":
-                                        writemessage(mFusen.DeleteFusen(apiurl[2], apiurl[3], out statusCode).ToString());
+                                        message=mFusen.DeleteFusen(apiurl[2], apiurl[3], out statusCode).ToString();
                                         break;
                                     default:
                                         statusCode = 404;
-                                        writemessage(messagejson("api error").ToString());
+                                        message = messagejson("api error").ToString();
                                         break;
                                 }
-                            else { statusCode = 404; writemessage(messagejson("api error").ToString()); }
+                            else { statusCode = 404; message=messagejson("api error").ToString(); }
                                 break;
                         default:
                             statusCode = 404;
-                            writemessage(messagejson("api error").ToString());
+                            message=messagejson("api error").ToString();
                             //flag = false;//暫定的に終了のためのコマンドとして使っている
                             break;
                     }
-                else { statusCode = 404; writemessage(messagejson("api error").ToString()); }
+                else { statusCode = 404; message=messagejson("api error").ToString(); }
                 res.StatusCode = statusCode;
+                writemessage(message);
             });
             
             res.Close();
