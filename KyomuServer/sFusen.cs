@@ -10,6 +10,7 @@ namespace KyomuServer
         public static string Connection { set { Connection = value; } get { return Connection; } }
 
         public static JObject GetFusenData(string accountID)
+
         {
             return null;
         }
