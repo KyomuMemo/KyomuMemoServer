@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
@@ -79,10 +79,10 @@ namespace KyomuServer
                                         break;
                                     default:
                                         statusCode = 404;
-                                    message = messagejson("api error").ToString();
+                                        message = messagejson("要求URLが間違っています").ToString();
                                         break;
                                 }
-                            else { statusCode = 404; message = messagejson("api error").ToString(); }
+                            else { statusCode = 404; message = messagejson("要求URLが間違っています").ToString(); }
                             break;
                         case "memo":
                             if (apiurl.Length == 5)
@@ -112,18 +112,18 @@ namespace KyomuServer
                                         break;
                                     default:
                                         statusCode = 404;
-                                        message = messagejson("api error").ToString();
+                                        message = messagejson("要求URLが間違っています").ToString();
                                         break;
                                 }
-                            else { statusCode = 404; message=messagejson("api error").ToString(); }
+                            else { statusCode = 404; message=messagejson("要求URLが間違っています").ToString(); }
                                 break;
                         default:
                             statusCode = 404;
-                            message=messagejson("api error").ToString();
+                            message=messagejson("要求URLが間違っています").ToString();
                             //flag = false;//暫定的に終了のためのコマンドとして使っている
                             break;
                     }
-                else { statusCode = 404; message=messagejson("api error").ToString(); }
+                else { statusCode = 404; message=messagejson("要求URLが間違っています").ToString(); }
                 res.StatusCode = statusCode;
                 writemessage(message);
             });
@@ -143,4 +143,3 @@ namespace KyomuServer
 
 
 
-*/

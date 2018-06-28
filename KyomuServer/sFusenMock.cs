@@ -23,33 +23,18 @@ namespace KyomuServer
                 foreach(Data f in fusens)
                 {
                     if (f.userID == accountID)
-                    {
-                        var fusen = new JObject();
-                        statusCode = 200;
-                        fusen.Add("userID", new JValue(f.userID));
-                        fusen.Add("fusenID", new JValue(f.fusenID));
-                        fusen.Add("title", new JValue(f.title));
-                        fusen.Add("tag", new JArray(f.tag));
-                        fusen.Add("text", new JValue(f.text));
-                        fusen.Add("color", new JValue(f.color));
-                        jar.Add(fusen);
-                    }
+                        jar.Add(f.ToJObject());
                 }
-                //if (statusCode != 200) return JObject.Parse(EMess);
                 return jar;
             }
             public JObject CreateFusen(string accountID, string fusenID, out int statusCode)
             {
-                statusCode = 400;
-                //foreach(var f in fusens) { if (fusenID == f.fusenID && accountID == f.userID) { statusCode = 409; return JObject.Parse(EMess); } }
+                statusCode = 200;
                 fusenID = Guid.NewGuid().ToString("N").Substring(0, 12);
-                statusCode = 200; fusens.Add(new Data(accountID, fusenID));
-                var fusen = fusenjson(accountID, fusenID);
-                fusen.Add("title", new JValue(""));
-                fusen.Add("tag", new JArray());
-                fusen.Add("text", new JValue(""));
-                fusen.Add("color", new JValue(""));
-                return fusen;
+                statusCode = 200;
+                var fusen = new Data(accountID, fusenID);
+                fusens.Add(fusen);
+                return fusen.ToJObject();
             }
 
             public JObject UpdateFusen(string accountID, string fusenID, JObject fusenData, out int statusCode)
@@ -72,22 +57,17 @@ namespace KyomuServer
 
             public JObject DeleteFusen(string accountID, string fusenID, out int statusCode)
             {
-                statusCode = 409;
-                for(int i=0;i<fusens.Count;i++)
+                foreach(Data f in fusens)
                 {
-                    if(fusens[i].fusenID==fusenID && fusens[i].userID == accountID)
+                    if(f.fusenID==fusenID && f.userID == accountID)
                     {
-                        var fusen = fusenjson(accountID, fusenID);
-                        fusen.Add("title", new JValue(fusens[i].title));
-                        fusen.Add("tag", new JArray(fusens[i].tag));
-                        fusen.Add("text", new JValue(fusens[i].text));
-                        fusen.Add("color", new JValue(fusens[i].color));
-                        fusens.RemoveAt(i);
                         statusCode = 200;
-                        return fusen;
+                        fusens.Remove(f);
+                        return f.ToJObject();
                     }
                 }
-                return JObject.Parse(EMess);
+                statusCode = 409;
+                return ServerMain.messagejson("該当する付箋が見つかりませんでした");
             }
 
 

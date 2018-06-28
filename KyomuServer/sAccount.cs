@@ -1,29 +1,14 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-
-
-
-
-
 using System.Text;
-
-
-
-
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
-
 using ConsoleApplication.Models;
 using Microsoft.EntityFrameworkCore;
-
-
 using System.Data;
-
 using System.Linq;
 using ConsoleApplication.Database;
-using Npgsql;
 
 
 namespace ConsoleApplication.Models
@@ -67,12 +52,6 @@ namespace ConsoleApplication.Models
     }
 }
 
-
-
-
-
-
-
 namespace ConsoleApplication.Database
 {
     public class TestDbContext : DbContext
@@ -86,11 +65,6 @@ namespace ConsoleApplication.Database
         }
     }
 }
-
-
-
-
-
 
 namespace KyomuServer
 {
@@ -108,8 +82,6 @@ namespace KyomuServer
                 return false;
             }
         }
-        
-        public static string Connection { set { Connection = value; } get { return Connection; } }
        
         public static JObject AccountCreate(string accountName, out int statusCode)
         {
@@ -121,9 +93,7 @@ namespace KyomuServer
                     if (accountName.Equals(members.name))
                     {
                         statusCode = 409;
-                        JObject error = new JObject();
-                        error.Add("message", new JValue("account is existed"));
-                        return error;
+                        return ServerMain.messagejson("このアカウント名は既に使われています");
                     }
                 }
                 var newMember = new Member { name = accountName };
@@ -166,9 +136,7 @@ namespace KyomuServer
                 }
                 //ログインしたいaccountNameがデータベース上に存在しない場合
                 statusCode = 409;
-                JObject error = new JObject();
-                error.Add("message", new JValue("account is not found"));
-                return error;
+                return ServerMain.messagejson("アカウントが見つかりませんでした");
             }
         }
     }
@@ -176,7 +144,7 @@ namespace KyomuServer
 }
 
 
-
+/*
 namespace ConsoleApplication
 {
     public class Program
@@ -194,23 +162,4 @@ namespace ConsoleApplication
         }
     }
 }
-
-
-
-namespace ConsoleApplication
-{
-    public class Program
-    {
-
-        public static void Main(string[] args)
-        {
-
-            int aa = 0;
-            KyomuServer.sAccount.AccountCreate("yyyy", out aa);
-            Console.WriteLine(aa);
-            KyomuServer.sAccount.AccountRefer("ytytyty", out aa);
-            Console.WriteLine(aa);
-            Console.ReadLine();
-        }
-    }
-}
+*/

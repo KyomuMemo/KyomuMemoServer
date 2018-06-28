@@ -19,16 +19,15 @@ namespace KyomuServer
 
             public JObject AccountRefer(string accountName, out int sc)
             {
-                sc = 409;
-                var json = JObject.Parse(EMess);
                 foreach (var ac in users)
                 {
                     if (accountName == ac.Name)
                     {
-                        sc = 201; json = userjson(ac.ID, ac.Name);
+                        sc = 201; return ac.ToJObject();
                     }
                 }
-                return json;
+                sc = 409;
+                return ServerMain.messagejson("アカウントが見つかりませんでした");
             }
 
             public JObject AccountCreate(string accountName, out int statusCode)
@@ -39,12 +38,13 @@ namespace KyomuServer
                     if(accountName == ac.Name)
                     {
                         statusCode = 409;
-                        return JObject.Parse(EMess);
+                        return ServerMain.messagejson("このアカウント名は既に使われています");
                     }
                 }
                 string id = Guid.NewGuid().ToString("N").Substring(0, 12);
-                users.Add(new User(accountName, id));
-                return userjson(id, accountName);
+                var user = new User(accountName, id);
+                users.Add(user);
+                return user.ToJObject();
             }
 
 
