@@ -103,7 +103,7 @@ namespace KyomuServer
                                         }
                                         catch (Newtonsoft.Json.JsonReaderException e)
                                         {
-                                            message = messagejson(e.Message).ToString();
+                                            message = messagejson("JSONの形式に問題があります").ToString();
                                             statusCode = 406;
                                         }
                                         break;

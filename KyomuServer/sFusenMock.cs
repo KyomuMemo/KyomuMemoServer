@@ -31,7 +31,6 @@ namespace KyomuServer
             {
                 statusCode = 200;
                 fusenID = Guid.NewGuid().ToString("N").Substring(0, 12);
-                statusCode = 200;
                 var fusen = new Data(accountID, fusenID);
                 fusens.Add(fusen);
                 return fusen.ToJObject();
@@ -39,7 +38,6 @@ namespace KyomuServer
 
             public JObject UpdateFusen(string accountID, string fusenID, JObject fusenData, out int statusCode)
             {
-                statusCode = 409;
                 foreach(var f in fusens)
                 {
                     if (f.fusenID == fusenID && f.userID == accountID)
@@ -49,10 +47,11 @@ namespace KyomuServer
                         f.text = fusenData["text"].Value<string>();
                         f.color = fusenData["color"].Value<string>();
                         statusCode = 200;
+                        return fusenData;
                     }
                 }
-                if (statusCode == 200) return fusenData;
-                else return JObject.Parse(EMess);
+                statusCode = 409;
+                return ServerMain.messagejson("該当する付箋が見つかりません");
             }
 
             public JObject DeleteFusen(string accountID, string fusenID, out int statusCode)
@@ -69,19 +68,7 @@ namespace KyomuServer
                 statusCode = 409;
                 return ServerMain.messagejson("該当する付箋が見つかりませんでした");
             }
-
-
-            public JObject fusenjson(string userID, string fusenID)
-            {
-                var json = new JObject();
-                json.Add("userID", new JValue(userID));
-                json.Add("fusenID", new JValue(fusenID));
-                return json;
-            }
-
-
-
-
+            
 
             public const string EMess = @"{
             ""message"" : ""error""
