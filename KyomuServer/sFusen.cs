@@ -83,18 +83,17 @@ namespace KyomuServer
             using (var db = new TestDbContext())
             {
                 //accountがあるかの関数
-                //fusenidの発行をする
-                string FusenID = "test";
-
-                foreach (var fusen in db.Fusens)
+                //fusenidの発行をする)
+                string FusenID;
+                bool same = true;
+                do
                 {
-                    if (fusen.fusenID.Equals(FusenID))
-                    {
-                        jobj.Add("message", new JValue("生成された付箋IDが重複しています"));
-                        statusCode = 409;
-                        return jobj;
-                    }
-                }
+                    FusenID = Guid.NewGuid().ToString("N").Substring(0, 20);
+                    foreach (var fusen in db.Fusens)
+                        if (!fusen.fusenID.Equals(FusenID))
+                            same = false;
+                    
+                } while (same);
                 jobj.Add("accountID", new JValue(accountID));
                 jobj.Add("fusenID", new JValue(FusenID));
                 jobj.Add("title", new JValue(""));
@@ -123,23 +122,23 @@ namespace KyomuServer
             using (var db = new TestDbContext())
             {
                 JObject jobj = new JObject();
-                var target = db.Fusens.Single(x => x.fusenID == fusenID);
-                if (target == null)
+                try
                 {
-                    jobj.Add("message",new JValue("指定の付箋が見つかりません"));
-                    statusCode = 409;
-                    return jobj;
-                }
-                else
-                {
+                    var target = db.Fusens.Single(x => x.fusenID == fusenID);
                     target.title = fusenData.GetValue("title").ToString();
-                    target.tag = fusenData.GetValue("tag").ToString().Split('"',System.StringSplitOptions.RemoveEmptyEntries);
+                    target.tag = fusenData.GetValue("tag").ToString().Split('"', System.StringSplitOptions.RemoveEmptyEntries);
                     target.text = fusenData.GetValue("text").ToString();
                     target.color = fusenData.GetValue("color").ToString();
                     statusCode = 200;
 
                     db.SaveChanges();
                     return fusenData;
+                }
+                catch (Exception)
+                {
+                    jobj.Add("message", new JValue("指定の付箋が見つかりません"));
+                    statusCode = 409;
+                    return jobj;
                 }
             }
         }
@@ -151,21 +150,22 @@ namespace KyomuServer
 
             using (var db = new TestDbContext())
             {
-                var target = db.Fusens.Single(x => x.fusenID == fusenID);
-                if (target == null)
+                try
                 {
-                    jobj.Add("message",new JValue("指定された付箋が存在しません"));
-                    statusCode = 409;
-                    return jobj;
-                }
-                else
-                {
+                    var target = db.Fusens.Single(x => x.fusenID == fusenID);
                     db.Remove(target);
                     db.SaveChanges();
                     statusCode = 200;
-                    jobj.Add("message",new JValue("削除に成功しました"));
+                    jobj.Add("message", new JValue("削除に成功しました"));
                     return jobj;
                 }
+                catch (Exception)
+                {
+                    jobj.Add("message", new JValue("指定された付箋が存在しません"));
+                    statusCode = 409;
+                    return jobj;
+                }
+                
             }
         }
     }
