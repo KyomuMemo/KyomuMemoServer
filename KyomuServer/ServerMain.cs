@@ -79,17 +79,17 @@ namespace KyomuServer
                                         break;
                                     default:
                                         statusCode = 404;
-                                    message = messagejson("api error").ToString();
+                                        message = messagejson("要求URLが間違っています").ToString();
                                         break;
                                 }
-                            else { statusCode = 404; message = messagejson("api error").ToString(); }
+                            else { statusCode = 404; message = messagejson("要求URLが間違っています").ToString(); }
                             break;
                         case "memo":
                             if (apiurl.Length == 5)
                                 switch (apiurl[4])
                                 {
                                     case "create":
-                                        message = mFusen.CreateFusen(apiurl[2], apiurl[3], out statusCode).ToString();
+                                        message = mFusen.CreateFusen(apiurl[2], out statusCode).ToString();
                                         break;
                                     case "get":
                                         message = mFusen.GetFusenAllData(apiurl[2], out statusCode).ToString();
@@ -103,8 +103,9 @@ namespace KyomuServer
                                         }
                                         catch (Newtonsoft.Json.JsonReaderException e)
                                         {
-                                            message = messagejson(e.Message).ToString();
+                                            message = messagejson("JSONの形式に問題があります").ToString();
                                             statusCode = 406;
+                                            Console.WriteLine(e.Message);
                                         }
                                         break;
                                     case "delete":
@@ -112,18 +113,18 @@ namespace KyomuServer
                                         break;
                                     default:
                                         statusCode = 404;
-                                        message = messagejson("api error").ToString();
+                                        message = messagejson("要求URLが間違っています").ToString();
                                         break;
                                 }
-                            else { statusCode = 404; message=messagejson("api error").ToString(); }
+                            else { statusCode = 404; message=messagejson("要求URLが間違っています").ToString(); }
                                 break;
                         default:
                             statusCode = 404;
-                            message=messagejson("api error").ToString();
+                            message=messagejson("要求URLが間違っています").ToString();
                             //flag = false;//暫定的に終了のためのコマンドとして使っている
                             break;
                     }
-                else { statusCode = 404; message=messagejson("api error").ToString(); }
+                else { statusCode = 404; message=messagejson("要求URLが間違っています").ToString(); }
                 res.StatusCode = statusCode;
                 writemessage(message);
             });
@@ -139,3 +140,7 @@ namespace KyomuServer
         }
     }
 }
+
+
+
+

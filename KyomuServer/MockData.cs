@@ -16,6 +16,14 @@ namespace KyomuServer
             {
                 Name = n; ID = i;
             }
+
+            public JObject ToJObject()
+            {
+                var json = new JObject();
+                json.Add("userID", new JValue(ID));
+                json.Add("userName", new JValue(Name));
+                return json;
+            }
         }
         class Data
         {
@@ -29,6 +37,18 @@ namespace KyomuServer
             public Data(string ui, string fi)
             {
                 userID = ui; fusenID = fi;
+            }
+
+            public JObject ToJObject()
+            {
+                var json = new JObject();
+                json.Add("userID", new JValue(userID));
+                json.Add("fusenID", new JValue(fusenID));
+                json.Add("title", new JValue(title));
+                json.Add("tag", new JArray(tag));
+                json.Add("text", new JValue(text));
+                json.Add("color", new JValue(color));
+                return json;
             }
         }
     }
