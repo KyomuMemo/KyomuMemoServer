@@ -12,15 +12,13 @@ namespace KyomuServer
     [Table("fusen")]
     public class Fusen
     {
-        [Key]
         [Column("accountid")]
         public int Id { get; set; }
 
-        [Required]
+        [Key]
         [Column("fusenid")]
         public string fusenID { get; set; }
 
-        [Required]
         [Column("tag")]
         public string[] tag { get; set; }
 
@@ -75,41 +73,42 @@ namespace KyomuServer
             return UserFusen;
         }
 
-        public static JObject CreateFusen(int accountID, string fusenID, out int statusCode)
+        public static JObject CreateFusen(int accountID, out int statusCode)
         {
             //DBに接続してアカウントID,付箋IDを持つ行を追加
             //成功したらそのまま返す/失敗したらJObjectに入れて返す
             //accountとfusenidが一意になるように
+            
             JObject jobj = new JObject();
             using (var db = new TestDbContext())
             {
                 //accountがあるかの関数
+                //fusenidの発行をする
+                string FusenID = "test";
 
-                //fusenIDが被ってないかチェック
                 foreach (var fusen in db.Fusens)
                 {
-                    if (fusen.fusenID.Equals(fusenID))
+                    if (fusen.fusenID.Equals(FusenID))
                     {
-                        jobj.Add("error", new JValue("error"));
+                        jobj.Add("message", new JValue("付箋IDが被った"));
                         statusCode = 409;
                         return jobj;
                     }
                 }
                 jobj.Add("accountID", new JValue(accountID));
-                jobj.Add("fusenID", new JValue(fusenID));
+                jobj.Add("fusenID", new JValue(FusenID));
                 jobj.Add("title", new JValue('\0'));
                 jobj.Add("tag", new JValue('\0'));
                 jobj.Add("text", new JValue('\0'));
                 jobj.Add("color", new JValue('\0'));
 
-                var NewFusen = new Fusen();
-                NewFusen.Id = accountID;
-                NewFusen.fusenID = fusenID;
-                NewFusen.title = "\0";
-                NewFusen.tag = "\0".Split() ;
-                NewFusen.text = "\0";
-
-                db.Fusens.Add (NewFusen);
+                db.Fusens.Add(new Fusen {
+                    Id = accountID,
+                fusenID = FusenID,
+                title="",
+                tag = { },
+                text=""
+                });
                 //
                 db.SaveChanges();
 
