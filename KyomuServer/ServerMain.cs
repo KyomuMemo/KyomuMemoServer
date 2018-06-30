@@ -89,7 +89,7 @@ namespace KyomuServer
                                 switch (apiurl[4])
                                 {
                                     case "create":
-                                        message = mFusen.CreateFusen(apiurl[2], apiurl[3], out statusCode).ToString();
+                                        message = mFusen.CreateFusen(apiurl[2], out statusCode).ToString();
                                         break;
                                     case "get":
                                         message = mFusen.GetFusenAllData(apiurl[2], out statusCode).ToString();

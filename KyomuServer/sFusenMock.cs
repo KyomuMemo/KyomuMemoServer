@@ -27,10 +27,10 @@ namespace KyomuServer
                 }
                 return jar;
             }
-            public JObject CreateFusen(string accountID, string fusenID, out int statusCode)
+            public JObject CreateFusen(string accountID, out int statusCode)
             {
                 statusCode = 200;
-                fusenID = Guid.NewGuid().ToString("N").Substring(0, 12);
+                var fusenID = Guid.NewGuid().ToString("N").Substring(0, 12);
                 var fusen = new Data(accountID, fusenID);
                 fusens.Add(fusen);
                 return fusen.ToJObject();

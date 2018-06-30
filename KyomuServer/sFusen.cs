@@ -21,7 +21,7 @@ namespace KyomuServer
         }
         */
 
-        public static void CreateFusen(int accountID,int fusenID, out int statusCode)
+        public static void CreateFusen(int accountID, out int statusCode)
         {
             statusCode = 0;
         }
