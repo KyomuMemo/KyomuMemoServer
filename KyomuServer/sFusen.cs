@@ -90,26 +90,26 @@ namespace KyomuServer
                 {
                     if (fusen.fusenID.Equals(FusenID))
                     {
-                        jobj.Add("message", new JValue("付箋IDが被った"));
+                        jobj.Add("message", new JValue("生成された付箋IDが重複しています"));
                         statusCode = 409;
                         return jobj;
                     }
                 }
                 jobj.Add("accountID", new JValue(accountID));
                 jobj.Add("fusenID", new JValue(FusenID));
-                jobj.Add("title", new JValue('\0'));
-                jobj.Add("tag", new JValue('\0'));
-                jobj.Add("text", new JValue('\0'));
-                jobj.Add("color", new JValue('\0'));
+                jobj.Add("title", new JValue(""));
+                jobj.Add("tag", new JValue(""));
+                jobj.Add("text", new JValue(""));
+                jobj.Add("color", new JValue(""));
 
-                db.Fusens.Add(new Fusen {
+                db.Fusens.Add(new Fusen
+                {
                     Id = accountID,
-                fusenID = FusenID,
-                title="",
-                tag = { },
-                text=""
+                    fusenID = FusenID,
+                    title = "",
+                    tag = { },
+                    text = ""
                 });
-                //
                 db.SaveChanges();
 
                 statusCode = 200;
@@ -126,7 +126,7 @@ namespace KyomuServer
                 var target = db.Fusens.Single(x => x.fusenID == fusenID);
                 if (target == null)
                 {
-                    jobj.Add("error",new JValue("target is not found"));
+                    jobj.Add("message",new JValue("指定の付箋が見つかりません"));
                     statusCode = 409;
                     return jobj;
                 }
@@ -154,7 +154,7 @@ namespace KyomuServer
                 var target = db.Fusens.Single(x => x.fusenID == fusenID);
                 if (target == null)
                 {
-                    jobj.Add("error");
+                    jobj.Add("message",new JValue("指定された付箋が存在しません"));
                     statusCode = 409;
                     return jobj;
                 }
@@ -163,7 +163,7 @@ namespace KyomuServer
                     db.Remove(target);
                     db.SaveChanges();
                     statusCode = 200;
-                    jobj.Add("success");
+                    jobj.Add("message",new JValue("削除に成功しました"));
                     return jobj;
                 }
             }
