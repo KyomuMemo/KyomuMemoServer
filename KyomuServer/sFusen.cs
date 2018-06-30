@@ -6,69 +6,23 @@ using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System;
+using KyomuServer.Database;
 
 namespace KyomuServer
 {
-    [Table("fusen")]
-    public class Fusen
-    {
-        [Column("accountid")]
-        public int Id { get; set; }
-
-        [Key]
-        [Column("fusenid")]
-        public string fusenID { get; set; }
-
-        [Column("tag")]
-        public string[] tag { get; set; }
-
-        [Column("title")]
-        public string title { get; set; }
-
-        [Column("text")]
-        public string text { get; set; }
-
-        [Column("color")]
-        public string color { get; set; }
-
-    }
-
-
-    public class TestDbContext : DbContext
-    {
-        public DbSet<Fusen> Fusens { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql(sFusen.Connection);
-
-    /*    public static JObject GetFusenData(int accountID, int fusenID)
-        {
-            return null;
-        }
-    }
 
     class sFusen //付箋情報を扱う
     {
-        //public static String Connection { set { Connection = value; } get { return Connection; } }
-        public static String Connection ="Host=localhost;Username=test;Password=8888;Database=test";
         public static JArray GetFusenAllData(int accountID, out int statusCode)
         {
             JArray UserFusen = new JArray();
-            using (var db = new TestDbContext())
+            using (var db = new KyomuDbContext())
             {
                 foreach (var fusen in db.Fusens)
                 {
                     if (fusen.fusenID.Equals(accountID))
                     {
-                        JObject jobj = new JObject();
-                        jobj.Add("accountID", new JValue(fusen.Id));
-                        jobj.Add("fusenID", new JValue(fusen.fusenID));
-                        jobj.Add("title", new JValue(fusen.title));
-                        jobj.Add("tag", new JValue(fusen.tag));
-                        jobj.Add("text", new JValue(fusen.text));
-                        jobj.Add("color", new JValue(fusen.color));
-                        UserFusen.Add(jobj);
+                        UserFusen.Add(Util.FusenToJobj(fusen));
                     }
                 }
             }
@@ -80,10 +34,10 @@ namespace KyomuServer
         {
             //DBに接続してアカウントID,付箋IDを持つ行を追加
             //成功したらそのまま返す/失敗したらJObjectに入れて返す
-            //accountとfusenidが一意になるように
+            //fusenidが一意になるように
             
             JObject jobj = new JObject();
-            using (var db = new TestDbContext())
+            using (var db = new KyomuDbContext())
             {
                 //accountがあるかの関数
                 //fusenidの発行をする)
@@ -95,23 +49,19 @@ namespace KyomuServer
                     foreach (var fusen in db.Fusens)
                         if (!fusen.fusenID.Equals(FusenID))
                             same = false;
-                    
                 } while (same);
-                jobj.Add("accountID", new JValue(accountID));
-                jobj.Add("fusenID", new JValue(FusenID));
-                jobj.Add("title", new JValue(""));
-                jobj.Add("tag", new JValue(""));
-                jobj.Add("text", new JValue(""));
-                jobj.Add("color", new JValue(""));
 
-                db.Fusens.Add(new Fusen
+                var newfusen = new Models.Fusen
                 {
-                    Id = accountID,
+                    userID = accountID,
                     fusenID = FusenID,
                     title = "",
-                    tag = { },
-                    text = ""
-                });
+                    tag = new string[] { "" },
+                    text = "",
+                    color = ""
+                };
+                jobj = Util.FusenToJobj(newfusen);
+                db.Fusens.Add(newfusen);
                 db.SaveChanges();
 
                 statusCode = 200;
@@ -122,16 +72,16 @@ namespace KyomuServer
 
         public static JObject UpdateFusen(int accountID, string fusenID, JObject fusenData, out int statusCode)
         {
-            using (var db = new TestDbContext())
+            using (var db = new KyomuDbContext())
             {
                 JObject jobj = new JObject();
                 try
                 {
                     var target = db.Fusens.Single(x => x.fusenID == fusenID);
-                    target.title = fusenData.GetValue("title").ToString();
-                    target.tag = fusenData.GetValue("tag").ToString().Split('"', System.StringSplitOptions.RemoveEmptyEntries);
-                    target.text = fusenData.GetValue("text").ToString();
-                    target.color = fusenData.GetValue("color").ToString();
+                    target.title = fusenData["title"].Value<string>();
+                    target.tag = fusenData["tag"].Value<string[]>();
+                    target.text = fusenData["text"].Value<string>();
+                    target.color = fusenData["color"].Value<string>();
                     statusCode = 200;
 
                     db.SaveChanges();
@@ -149,17 +99,16 @@ namespace KyomuServer
         public static JObject DeleteFusen(int accountID, string fusenID, out int statusCode)
         {
             JObject jobj = new JObject();
-            //accountがあるかの関数
 
-            using (var db = new TestDbContext())
+            using (var db = new KyomuDbContext())
             {
                 try
                 {
                     var target = db.Fusens.Single(x => x.fusenID == fusenID);
+                    jobj = Util.FusenToJobj(target);
                     db.Remove(target);
                     db.SaveChanges();
                     statusCode = 200;
-                    jobj.Add("message", new JValue("削除に成功しました"));
                     return jobj;
                 }
                 catch (Exception)

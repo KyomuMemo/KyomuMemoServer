@@ -63,7 +63,7 @@ namespace KyomuServer
                     db.Users.Add(newMember);
                     db.SaveChanges();
                     statusCode = 200;
-                    return Util.MenberToJobj(newMember);
+                    return Util.UserToJobj(newMember);
                 }
             }
             catch(Exception e)
@@ -85,7 +85,7 @@ namespace KyomuServer
                         if (accountName.Equals(members.name))
                         {
                             statusCode = 200;
-                            return Util.MenberToJobj(members);
+                            return Util.UserToJobj(members);
                         }
                     }
                     //ログインしたいaccountNameがデータベース上に存在しない場合
