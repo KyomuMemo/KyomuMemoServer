@@ -13,13 +13,14 @@ namespace KyomuServer
 {
     class sAccount  //アカウント情報を扱う
     {
+        //アカウントが存在するかどうかを返す
         public static bool accountIDExist(int accountID)
         {
             using (var db = new KyomuDbContext())
             {
                 try
                 {
-                    foreach (var members in db.Members)
+                    foreach (var members in db.Users)
                     {
                         if (members.id.Equals(accountID))
                             return true;
@@ -40,7 +41,7 @@ namespace KyomuServer
             {
                 using (var db = new KyomuDbContext())
                 {
-                    foreach (var members in db.Members)
+                    foreach (var members in db.Users)
                     {
                         //入力されたNameが既にデータベースにある場合
                         if (accountName.Equals(members.name))
@@ -49,8 +50,7 @@ namespace KyomuServer
                             return ServerMain.messagejson("このアカウント名は既に使われています");
                         }
                     }
-                    var newMember = new Member { name = accountName };
-                    //入力されたNameが既にデータベースにない場合
+                    //入力されたNameがデータベースにない場合
                     byte[] data = Encoding.UTF8.GetBytes(accountName);
                     var bs = new System.Security.Cryptography.MD5CryptoServiceProvider().ComputeHash(data);
                     StringBuilder result = new StringBuilder();
@@ -58,15 +58,12 @@ namespace KyomuServer
                     {
                         result.Append(b.ToString("x2"));
                     }
-                    newMember.id = result.ToString();
+                    var newMember = new User { name = accountName,id=result.ToString() };
                     //データベースに登録
-                    db.Members.Add(newMember);
+                    db.Users.Add(newMember);
                     db.SaveChanges();
-                    JObject newObj = new JObject();
-                    newObj.Add("userID", new JValue(newMember.id));
-                    newObj.Add("userName", new JValue(newMember.name));
                     statusCode = 200;
-                    return newObj;
+                    return Util.MenberToJobj(newMember);
                 }
             }
             catch(Exception e)
@@ -83,15 +80,12 @@ namespace KyomuServer
             {
                 using (var db = new KyomuDbContext())
                 {
-                    foreach (var members in db.Members)
+                    foreach (var members in db.Users)
                     {
                         if (accountName.Equals(members.name))
                         {
-                            JObject newObj = new JObject();
-                            newObj.Add("userID", new JValue(members.id));
-                            newObj.Add("userName", new JValue(members.name));
                             statusCode = 200;
-                            return newObj;
+                            return Util.MenberToJobj(members);
                         }
                     }
                     //ログインしたいaccountNameがデータベース上に存在しない場合

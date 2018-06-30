@@ -105,6 +105,7 @@ namespace KyomuServer
                                         {
                                             message = messagejson("JSONの形式に問題があります").ToString();
                                             statusCode = 406;
+                                            Console.WriteLine(e.Message);
                                         }
                                         break;
                                     case "delete":

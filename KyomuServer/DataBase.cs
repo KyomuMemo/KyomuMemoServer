@@ -8,8 +8,8 @@ using KyomuServer.Models;
 
 namespace KyomuServer.Models
 {
-    [Table("fusen")]
-    public class Member
+    [Table("usertable")]
+    public class User
     {
         [Key]
         [Column("userid")]
@@ -25,11 +25,11 @@ namespace KyomuServer.Database
 {
     public class KyomuDbContext : DbContext
     {
-        public DbSet<Member> Members { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Username=postgres;Password=Basketball10;Database=test");
+            optionsBuilder.UseNpgsql("Host=localhost;Username=****;Password=****;Database=kyomudb");
         }
     }
 }
