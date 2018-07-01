@@ -89,17 +89,17 @@ namespace KyomuServer
                                 switch (apiurl[4])
                                 {
                                     case "create":
-                                        message = mFusen.CreateFusen(apiurl[2], out statusCode).ToString();
+                                        message = sFusen.CreateFusen(apiurl[2], out statusCode).ToString();
                                         break;
                                     case "get":
-                                        message = mFusen.GetFusenAllData(apiurl[2], out statusCode).ToString();
+                                        message = sFusen.GetFusenAllData(apiurl[2], out statusCode).ToString();
                                         break;
                                     case "update":
                                         try
                                         {
                                             var reader = new System.IO.StreamReader(req.InputStream);
                                             var body = reader.ReadToEnd();
-                                            message=mFusen.UpdateFusen(apiurl[2], apiurl[3], JObject.Parse(body), out statusCode).ToString();
+                                            message = sFusen.UpdateFusen(apiurl[2], apiurl[3], JObject.Parse(body), out statusCode).ToString();
                                         }
                                         catch (Newtonsoft.Json.JsonReaderException e)
                                         {

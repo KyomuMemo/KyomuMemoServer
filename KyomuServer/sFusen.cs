@@ -1,10 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
-using Npgsql;
+﻿using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System;
 using KyomuServer.Database;
 
@@ -13,111 +9,144 @@ namespace KyomuServer
 
     class sFusen //付箋情報を扱う
     {
-        public static JArray GetFusenAllData(int accountID, out int statusCode)
+        public static JToken GetFusenAllData(string accountID, out int statusCode)
         {
-            JArray UserFusen = new JArray();
-            using (var db = new KyomuDbContext())
+            try
             {
-                foreach (var fusen in db.Fusens)
+                JArray UserFusen = new JArray();
+                using (var db = new KyomuDbContext())
                 {
-                    if (fusen.fusenID.Equals(accountID))
+                    foreach (var fusen in db.Fusens)
                     {
-                        UserFusen.Add(Util.FusenToJobj(fusen));
+                        if (fusen.fusenID.Equals(accountID))
+                        {
+                            UserFusen.Add(Util.FusenToJobj(fusen));
+                        }
                     }
                 }
+                statusCode = 200;
+                return UserFusen;
+            }catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                statusCode = 500;
+                return ServerMain.messagejson("データベースで異常が発生しました");
             }
-            statusCode = 200;
-            return UserFusen;
         }
 
-        public static JObject CreateFusen(int accountID, out int statusCode)
+        public static JObject CreateFusen(string accountID, out int statusCode)
         {
             //DBに接続してアカウントID,付箋IDを持つ行を追加
             //成功したらそのまま返す/失敗したらJObjectに入れて返す
             //fusenidが一意になるように
-            
-            JObject jobj = new JObject();
-            using (var db = new KyomuDbContext())
-            {
-                //accountがあるかの関数
-                //fusenidの発行をする)
-                string FusenID;
-                bool same = true;
-                do
-                {
-                    FusenID = Guid.NewGuid().ToString("N").Substring(0, 20);
-                    foreach (var fusen in db.Fusens)
-                        if (!fusen.fusenID.Equals(FusenID))
-                            same = false;
-                } while (same);
-
-                var newfusen = new Models.Fusen
-                {
-                    userID = accountID,
-                    fusenID = FusenID,
-                    title = "",
-                    tag = new string[] { "" },
-                    text = "",
-                    color = ""
-                };
-                jobj = Util.FusenToJobj(newfusen);
-                db.Fusens.Add(newfusen);
-                db.SaveChanges();
-
-                statusCode = 200;
-
-            }
-            return jobj;
-        }
-
-        public static JObject UpdateFusen(int accountID, string fusenID, JObject fusenData, out int statusCode)
-        {
-            using (var db = new KyomuDbContext())
+            try
             {
                 JObject jobj = new JObject();
-                try
+                using (var db = new KyomuDbContext())
                 {
-                    var target = db.Fusens.Single(x => x.fusenID == fusenID);
-                    target.title = fusenData["title"].Value<string>();
-                    target.tag = fusenData["tag"].Value<string[]>();
-                    target.text = fusenData["text"].Value<string>();
-                    target.color = fusenData["color"].Value<string>();
-                    statusCode = 200;
+                    //accountがあるかの関数
+                    //fusenidの発行をする)
+                    string FusenID;
+                    bool same = true;
+                    do
+                    {
+                        FusenID = Guid.NewGuid().ToString("N").Substring(0, 20);
+                        foreach (var fusen in db.Fusens)
+                            if (!fusen.fusenID.Equals(FusenID))
+                                same = false;
+                    } while (same);
 
+                    var newfusen = new Models.Fusen
+                    {
+                        userID = accountID,
+                        fusenID = FusenID,
+                        title = "",
+                        tag = new string[] { "" },
+                        text = "",
+                        color = ""
+                    };
+                    jobj = Util.FusenToJobj(newfusen);
+                    db.Fusens.Add(newfusen);
                     db.SaveChanges();
-                    return fusenData;
+                    statusCode = 200;
                 }
-                catch (Exception)
+                return jobj;
+            }catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                statusCode = 500;
+                return ServerMain.messagejson("データベースで異常が発生しました");
+            }
+        }
+
+        public static JObject UpdateFusen(string accountID, string fusenID, JObject fusenData, out int statusCode)
+        {
+            if (fusenData["userID"].Value<string>() != accountID || fusenData["fusenID"].Value<string>() != fusenID)
+            {
+                statusCode = 403;
+                return ServerMain.messagejson("APIと付箋JSONに不整合が起きています");
+            }
+            try
+            {
+                using (var db = new KyomuDbContext())
                 {
-                    jobj.Add("message", new JValue("指定の付箋が見つかりません"));
-                    statusCode = 409;
-                    return jobj;
+                    JObject jobj = new JObject();
+                    try
+                    {
+                        var target = db.Fusens.Single(x => x.fusenID == fusenID);
+                        target.title = fusenData["title"].Value<string>();
+                        target.tag = fusenData["tag"].Value<string[]>();
+                        target.text = fusenData["text"].Value<string>();
+                        target.color = fusenData["color"].Value<string>();
+                        statusCode = 200;
+                        db.SaveChanges();
+                        return fusenData;
+                    }
+                    catch (Exception)
+                    {
+                        jobj.Add("message", new JValue("指定の付箋が見つかりません"));
+                        statusCode = 409;
+                        return jobj;
+                    }
                 }
+            }catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                statusCode = 500;
+                return ServerMain.messagejson("データベースで異常が発生しました");
             }
         }
 
         public static JObject DeleteFusen(int accountID, string fusenID, out int statusCode)
         {
-            JObject jobj = new JObject();
-
-            using (var db = new KyomuDbContext())
+            try
             {
-                try
+                JObject jobj = new JObject();
+
+                using (var db = new KyomuDbContext())
                 {
-                    var target = db.Fusens.Single(x => x.fusenID == fusenID);
-                    jobj = Util.FusenToJobj(target);
-                    db.Remove(target);
-                    db.SaveChanges();
-                    statusCode = 200;
-                    return jobj;
+                    try
+                    {
+                        var target = db.Fusens.Single(x => x.fusenID == fusenID);
+                        jobj = Util.FusenToJobj(target);
+                        db.Remove(target);
+                        db.SaveChanges();
+                        statusCode = 200;
+                        return jobj;
+                    }
+                    catch (Exception)
+                    {
+                        jobj.Add("message", new JValue("指定された付箋が存在しません"));
+                        statusCode = 409;
+                        return jobj;
+                    }
                 }
-                catch (Exception)
-                {
-                    jobj.Add("message", new JValue("指定された付箋が存在しません"));
-                    statusCode = 409;
-                    return jobj;
-                }
-                
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                statusCode = 500;
+                return ServerMain.messagejson("データベースで異常が発生しました");
             }
         }
     }
