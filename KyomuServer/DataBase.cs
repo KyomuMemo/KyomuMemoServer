@@ -17,7 +17,7 @@ namespace KyomuServer.Models
         public string name { get; set; }
     }
 
-    [Table("fusen")]
+    [Table("fusentable")]
     public class Fusen
     {
         [Column("userid")]

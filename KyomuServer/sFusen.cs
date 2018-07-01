@@ -18,7 +18,7 @@ namespace KyomuServer
                 {
                     foreach (var fusen in db.Fusens)
                     {
-                        if (fusen.fusenID.Equals(accountID))
+                        if (fusen.userID.Equals(accountID))
                         {
                             UserFusen.Add(Util.FusenToJobj(fusen));
                         }
@@ -47,13 +47,14 @@ namespace KyomuServer
                     //accountがあるかの関数
                     //fusenidの発行をする)
                     string FusenID;
-                    bool same = true;
+                    bool same = false;
                     do
                     {
+                        same = false;
                         FusenID = Guid.NewGuid().ToString("N").Substring(0, 20);
                         foreach (var fusen in db.Fusens)
-                            if (!fusen.fusenID.Equals(FusenID))
-                                same = false;
+                            if (fusen.fusenID.Equals(FusenID))
+                                same = true;
                     } while (same);
 
                     var newfusen = new Models.Fusen
@@ -93,11 +94,11 @@ namespace KyomuServer
                     JObject jobj = new JObject();
                     try
                     {
-                        var target = db.Fusens.Single(x => x.fusenID == fusenID);
-                        target.title = fusenData["title"].Value<string>();
-                        target.tag = fusenData["tag"].Value<string[]>();
-                        target.text = fusenData["text"].Value<string>();
-                        target.color = fusenData["color"].Value<string>();
+                        var target = db.Fusens.Single(x => x.fusenID == fusenID); Console.WriteLine("target");
+                        target.title = fusenData["title"].Value<string>(); Console.WriteLine("title");
+                        target.tag = fusenData["tag"].ToObject<string[]>(); Console.WriteLine("tag");
+                        target.text = fusenData["text"].Value<string>(); Console.WriteLine("text");
+                        target.color = fusenData["color"].Value<string>(); Console.WriteLine("color");
                         statusCode = 200;
                         db.SaveChanges();
                         return fusenData;
@@ -117,7 +118,7 @@ namespace KyomuServer
             }
         }
 
-        public static JObject DeleteFusen(int accountID, string fusenID, out int statusCode)
+        public static JObject DeleteFusen(string accountID, string fusenID, out int statusCode)
         {
             try
             {

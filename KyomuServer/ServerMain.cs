@@ -19,6 +19,7 @@ namespace KyomuServer
     class ServerMain
     {
         static Mock.sAccount mAccount; static Mock.sFusen mFusen;
+        static bool EndFlag = false;
 
         static void Main(string[] args)
         {
@@ -34,18 +35,15 @@ namespace KyomuServer
                 throw new ArgumentException("prefixes");
             var listner = new HttpListener();
             foreach(var s in prefixes) listner.Prefixes.Add(s);
-            bool tudukeruFlag = true;
             listner.Start();
-            while (tudukeruFlag)
+            while (!EndFlag)
             {
                 var cxt = listner.GetContext();
                 SendInfoAsync(cxt);
             }
             listner.Stop();
         }
-
-
-
+        
         static async void SendInfoAsync(HttpListenerContext context)
         {
             var req = context.Request;
@@ -71,11 +69,10 @@ namespace KyomuServer
                                 switch (apiurl[3])
                                 {
                                     case "create":
-                                        
-                                        message = mAccount.AccountCreate(apiurl[2], out statusCode).ToString();
+                                        message = sAccount.AccountCreate(apiurl[2], out statusCode).ToString();
                                         break;
                                     case "getid":
-                                        message = mAccount.AccountRefer(apiurl[2], out statusCode).ToString();
+                                        message = sAccount.AccountRefer(apiurl[2], out statusCode).ToString();
                                         break;
                                     default:
                                         statusCode = 404;
@@ -109,7 +106,7 @@ namespace KyomuServer
                                         }
                                         break;
                                     case "delete":
-                                        message=mFusen.DeleteFusen(apiurl[2], apiurl[3], out statusCode).ToString();
+                                        message = sFusen.DeleteFusen(apiurl[2], apiurl[3], out statusCode).ToString();
                                         break;
                                     default:
                                         statusCode = 404;
