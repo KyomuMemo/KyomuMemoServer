@@ -20,10 +20,12 @@ namespace KyomuServer
     {
         static Mock.sAccount mAccount; static Mock.sFusen mFusen;
         static bool EndFlag = false;
+        static string RootPath;
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Hello Web World!");
+            RootPath = System.IO.Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory + @"\..\..\..\..\..\KyomuMemoClient\public");//ルートディレクトリの指定
             string[] url = { "http://localhost:2000/" };
             mAccount = new Mock.sAccount(); mFusen = new Mock.sFusen(); //デバッグ用モック
             SimpleLister(url);
@@ -51,16 +53,13 @@ namespace KyomuServer
             var ostr = res.OutputStream;
             int statusCode;
             string message;
-            void writemessage(string str)
-            {
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(str);
-                ostr.Write(buffer, 0, buffer.Length);
-            }
+            byte[] resbody;
 
             res.AddHeader("Access-Control-Allow-Origin","*");
             await Task.Run(() =>
             {
-                var apiurl = req.RawUrl.Split("/");
+                var rawurl = (req.RawUrl!="/") ? req.RawUrl : "/index.html";
+                var apiurl = rawurl.Split("/");
                 if (apiurl.Length > 1)
                     switch (apiurl[1])
                     {
@@ -80,6 +79,7 @@ namespace KyomuServer
                                         break;
                                 }
                             else { statusCode = 404; message = messagejson("要求URLが間違っています").ToString(); }
+                            resbody = System.Text.Encoding.UTF8.GetBytes(message);
                             break;
                         case "memo":
                             if (apiurl.Length == 5)
@@ -114,16 +114,25 @@ namespace KyomuServer
                                         break;
                                 }
                             else { statusCode = 404; message=messagejson("要求URLが間違っています").ToString(); }
-                                break;
+                            resbody = System.Text.Encoding.UTF8.GetBytes(message);
+                            break;
                         default:
-                            statusCode = 404;
-                            message=messagejson("要求URLが間違っています").ToString();
-                            //flag = false;//暫定的に終了のためのコマンドとして使っている
+                            try
+                            {
+                                var filepath = RootPath + rawurl.Replace("/", "\\");
+                                statusCode = 200;
+                                resbody = System.IO.File.ReadAllBytes(filepath);
+                            }catch(Exception e)
+                            {
+                                statusCode = 404;
+                                Console.WriteLine(e.Message);
+                                resbody = System.Text.Encoding.UTF8.GetBytes(messagejson("不正なアクセスの可能性があります").ToString());
+                            }
                             break;
                     }
-                else { statusCode = 404; message=messagejson("要求URLが間違っています").ToString(); }
+                else { statusCode = 404; resbody = System.Text.Encoding.UTF8.GetBytes(messagejson("要求URLが間違っています").ToString()); }
                 res.StatusCode = statusCode;
-                writemessage(message);
+                ostr.Write(resbody, 0, resbody.Length);
             });
             
             res.Close();
