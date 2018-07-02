@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using KyomuServer.Models;
@@ -19,6 +16,30 @@ namespace KyomuServer.Models
         [Column("username")]
         public string name { get; set; }
     }
+
+    [Table("fusentable")]
+    public class Fusen
+    {
+        [Column("userid")]
+        public string userID { get; set; }
+
+        [Key]
+        [Column("fusenid")]
+        public string fusenID { get; set; }
+
+        [Column("tag")]
+        public string[] tag { get; set; }
+
+        [Column("title")]
+        public string title { get; set; }
+
+        [Column("honbun")]
+        public string text { get; set; }
+
+        [Column("color")]
+        public string color { get; set; }
+
+    }
 }
 
 namespace KyomuServer.Database
@@ -26,6 +47,7 @@ namespace KyomuServer.Database
     public class KyomuDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<Fusen> Fusens { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
