@@ -45,6 +45,11 @@ namespace KyomuServer
                 using (var db = new KyomuDbContext())
                 {
                     //accountがあるかの関数
+                    if (!sAccount.accountIDExist(accountID))
+                    {
+                        statusCode = 404;
+                        return ServerMain.messagejson("存在しないアカウントIDです");
+                    }
                     //fusenidの発行をする)
                     string FusenID;
                     bool same = false;

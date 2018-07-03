@@ -16,7 +16,7 @@ namespace KyomuServer
         public static string[] NgList = { "" , "undefined" , "Undefind" };
 
         //アカウントが存在するかどうかを返す
-        public static bool accountIDExist(int accountID)
+        public static bool accountIDExist(string accountID)
         {
             using (var db = new KyomuDbContext())
             {
