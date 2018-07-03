@@ -94,11 +94,11 @@ namespace KyomuServer
                     JObject jobj = new JObject();
                     try
                     {
-                        var target = db.Fusens.Single(x => x.fusenID == fusenID); Console.WriteLine("target");
-                        target.title = fusenData["title"].Value<string>(); Console.WriteLine("title");
-                        target.tag = fusenData["tag"].ToObject<string[]>(); Console.WriteLine("tag");
-                        target.text = fusenData["text"].Value<string>(); Console.WriteLine("text");
-                        target.color = fusenData["color"].Value<string>(); Console.WriteLine("color");
+                        var target = db.Fusens.Single(x => x.fusenID == fusenID);
+                        target.title = fusenData["title"].Value<string>();
+                        target.tag = fusenData["tag"].ToObject<string[]>();
+                        target.text = fusenData["text"].Value<string>();
+                        target.color = fusenData["color"].Value<string>();
                         statusCode = 200;
                         db.SaveChanges();
                         return fusenData;
