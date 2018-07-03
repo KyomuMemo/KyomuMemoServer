@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-using Microsoft.EntityFrameworkCore;
 using System.Text;
 using KyomuServer.Models;
 using KyomuServer.Database;
-using System.Data;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace KyomuServer
@@ -46,7 +42,7 @@ namespace KyomuServer
                 {
                     if (Array.Exists(NgList,str=>str==accountName) || !Regex.IsMatch(accountName,NameRX) )
                     {
-                        statusCode = 404;
+                        statusCode = 403;
                         return ServerMain.messagejson("このアカウント名は使用不能です");
                     }
                     foreach (var members in db.Users)

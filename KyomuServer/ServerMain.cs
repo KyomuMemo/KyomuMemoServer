@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Net;
-using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 
 /*
-"<host>"--"/account/<username>/"--"create"
-        |                       |-"getid"
+"<host>"--"/account/"--"create"
+        |            |-"getid"
         |
-        |-"/memo/<userid>/<memoid>/"--"create"
-                                    |-"get"
-                                    |-"update"
-                                    |-"delete"
+        |-"/memo/"--"create"
+                   |-"get"
+                   |-"update"
+                   |-"delete"
      */
 
 namespace KyomuServer
@@ -61,67 +61,67 @@ namespace KyomuServer
             await Task.Run(() =>
             {
                 var apiurl = req.RawUrl.Split("/");
-                if (apiurl.Length > 1)
-                    switch (apiurl[1])
+                if (apiurl.Length == 3)
+                {
+                    try
                     {
-                        case "account":
-                            if (apiurl.Length == 4)
-                                switch (apiurl[3])
+                        JObject reqjson;
+                        var reader = new System.IO.StreamReader(req.InputStream);
+                        var body = reader.ReadToEnd();
+                        reqjson = JObject.Parse(body);
+                        switch (apiurl[1])
+                        {
+                            case "account":
+                                switch (apiurl[2])
                                 {
                                     case "create":
-                                        message = sAccount.AccountCreate(apiurl[2], out statusCode).ToString();
+                                        message = sAccount.AccountCreate(reqjson["userName"].Value<string>(), out statusCode).ToString();
                                         break;
                                     case "getid":
-                                        message = sAccount.AccountRefer(apiurl[2], out statusCode).ToString();
+                                        message = sAccount.AccountRefer(reqjson["userName"].Value<string>(), out statusCode).ToString();
                                         break;
                                     default:
                                         statusCode = 404;
                                         message = messagejson("要求URLが間違っています").ToString();
                                         break;
                                 }
-                            else { statusCode = 404; message = messagejson("要求URLが間違っています").ToString(); }
-                            break;
-                        case "memo":
-                            if (apiurl.Length == 5)
-                                switch (apiurl[4])
+                                break;
+                            case "memo":
+                                switch (apiurl[2])
                                 {
                                     case "create":
-                                        message = sFusen.CreateFusen(apiurl[2], out statusCode).ToString();
+                                        message = sFusen.CreateFusen(reqjson["userID"].Value<string>(), out statusCode).ToString();
                                         break;
                                     case "get":
-                                        message = sFusen.GetFusenAllData(apiurl[2], out statusCode).ToString();
+                                        message = sFusen.GetFusenAllData(reqjson["userID"].Value<string>(), out statusCode).ToString();
                                         break;
                                     case "update":
-                                        try
-                                        {
-                                            var reader = new System.IO.StreamReader(req.InputStream);
-                                            var body = reader.ReadToEnd();
-                                            message = sFusen.UpdateFusen(apiurl[2], apiurl[3], JObject.Parse(body), out statusCode).ToString();
-                                        }
-                                        catch (Newtonsoft.Json.JsonReaderException e)
-                                        {
-                                            message = messagejson("JSONの形式に問題があります").ToString();
-                                            statusCode = 406;
-                                            Console.WriteLine(e.Message);
-                                        }
+                                        message = sFusen.UpdateFusen(reqjson, out statusCode).ToString();
                                         break;
                                     case "delete":
-                                        message = sFusen.DeleteFusen(apiurl[2], apiurl[3], out statusCode).ToString();
+                                        message = sFusen.DeleteFusen(reqjson["userID"].Value<string>(), reqjson["fusenID"].Value<string>(), out statusCode).ToString();
                                         break;
                                     default:
                                         statusCode = 404;
                                         message = messagejson("要求URLが間違っています").ToString();
                                         break;
                                 }
-                            else { statusCode = 404; message=messagejson("要求URLが間違っています").ToString(); }
                                 break;
-                        default:
-                            statusCode = 404;
-                            message=messagejson("要求URLが間違っています").ToString();
-                            //flag = false;//暫定的に終了のためのコマンドとして使っている
-                            break;
+                            default:
+                                statusCode = 404;
+                                message = messagejson("要求URLが間違っています").ToString();
+                                //flag = false;//暫定的に終了のためのコマンドとして使っている
+                                break;
+                        }
                     }
-                else { statusCode = 404; message=messagejson("要求URLが間違っています").ToString(); }
+                    catch (JsonException e)
+                    {
+                        message = messagejson("JSONの形式に問題があります").ToString();
+                        statusCode = 406;
+                        Console.WriteLine(e.Message);
+                    }
+                }
+                else { statusCode = 404; message = messagejson("要求URLが間違っています").ToString(); }
                 res.StatusCode = statusCode;
                 writemessage(message);
             });

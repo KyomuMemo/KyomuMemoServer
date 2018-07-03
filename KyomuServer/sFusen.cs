@@ -85,13 +85,8 @@ namespace KyomuServer
             }
         }
 
-        public static JObject UpdateFusen(string accountID, string fusenID, JObject fusenData, out int statusCode)
+        public static JObject UpdateFusen(JObject fusenData, out int statusCode)
         {
-            if (fusenData["userID"].Value<string>() != accountID || fusenData["fusenID"].Value<string>() != fusenID)
-            {
-                statusCode = 403;
-                return ServerMain.messagejson("APIと付箋JSONに不整合が起きています");
-            }
             try
             {
                 using (var db = new KyomuDbContext())
@@ -99,7 +94,7 @@ namespace KyomuServer
                     JObject jobj = new JObject();
                     try
                     {
-                        var target = db.Fusens.Single(x => x.fusenID == fusenID);
+                        var target = db.Fusens.Single(x => x.fusenID == fusenData["fusenID"].Value<string>());
                         target.title = fusenData["title"].Value<string>();
                         target.tag = fusenData["tag"].ToObject<string[]>();
                         target.text = fusenData["text"].Value<string>();
@@ -128,7 +123,6 @@ namespace KyomuServer
             try
             {
                 JObject jobj = new JObject();
-
                 using (var db = new KyomuDbContext())
                 {
                     try
