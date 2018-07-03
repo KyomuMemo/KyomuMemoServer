@@ -13,8 +13,10 @@ namespace KyomuServer
 {
     class sAccount  //アカウント情報を扱う
     {
+        public static string[] NgList = { "" , "undefined" , "Undefind" };
+
         //アカウントが存在するかどうかを返す
-        public static bool accountIDExist(int accountID)
+        public static bool accountIDExist(string accountID)
         {
             using (var db = new KyomuDbContext())
             {
@@ -41,6 +43,11 @@ namespace KyomuServer
             {
                 using (var db = new KyomuDbContext())
                 {
+                    if (Array.Exists(NgList,str=>str==accountName))
+                    {
+                        statusCode = 404;
+                        return ServerMain.messagejson("このアカウント名は使用不能です");
+                    }
                     foreach (var members in db.Users)
                     {
                         //入力されたNameが既にデータベースにある場合
