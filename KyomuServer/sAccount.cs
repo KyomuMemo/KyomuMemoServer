@@ -7,13 +7,14 @@ using KyomuServer.Models;
 using KyomuServer.Database;
 using System.Data;
 using System.Linq;
-
+using System.Text.RegularExpressions;
 
 namespace KyomuServer
 {
     class sAccount  //アカウント情報を扱う
     {
-        public static string[] NgList = { "" , "undefined" , "Undefind" };
+        public static string[] NgList = { "UNDEFINED" , "undefined" , "Undefined" };
+        public static string NameRX  { get => "^[0-9a-zA-Z][0-9a-zA-Z]*$"; }
 
         //アカウントが存在するかどうかを返す
         public static bool accountIDExist(string accountID)
@@ -43,7 +44,7 @@ namespace KyomuServer
             {
                 using (var db = new KyomuDbContext())
                 {
-                    if (Array.Exists(NgList,str=>str==accountName))
+                    if (Array.Exists(NgList,str=>str==accountName) || !Regex.IsMatch(accountName,NameRX) )
                     {
                         statusCode = 404;
                         return ServerMain.messagejson("このアカウント名は使用不能です");
