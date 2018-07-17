@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using KyomuServer.Models;
 
+/*
+ DBのテーブル構造の定義
+     */
 namespace KyomuServer.Models
 {
     [Table("usertable")]
@@ -51,7 +54,7 @@ namespace KyomuServer.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Username=****;Password=****;Database=kyomudb");
+            optionsBuilder.UseNpgsql("Host=localhost;Username=****;Password=****;Database=kyomudb");//PostgreSQLのデータベースとの接続情報を書く
         }
     }
 }

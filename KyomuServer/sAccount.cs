@@ -12,7 +12,11 @@ namespace KyomuServer
         public static string[] NgList = { "UNDEFINED" , "undefined" , "Undefined" };
         public static string NameRX  { get => "^[0-9a-zA-Z][0-9a-zA-Z]*$"; }
 
-        //アカウントが存在するかどうかを返す
+        /*
+         引数 accountID:ユーザID
+         返値 アカウントの存在有無
+         アカウントが存在するかどうかを返す
+             */
         public static bool accountIDExist(string accountID)
         {
             using (var db = new KyomuDbContext())
@@ -34,6 +38,10 @@ namespace KyomuServer
             }
         }
        
+        /*
+         引数
+         返値
+             */
         public static JObject AccountCreate(string accountName, out int statusCode)
         {
             try
@@ -78,6 +86,10 @@ namespace KyomuServer
             }
         }
 
+        /*
+         引数
+         返値
+             */
         public static JObject AccountRefer(string accountName, out int statusCode)
         {
             try
@@ -107,24 +119,3 @@ namespace KyomuServer
     }
 
 }
-
-
-/*
-namespace ConsoleApplication
-{
-    public class Program
-    {
-
-        public static void Main(string[] args)
-        {
-        
-            int aa = 0;
-            KyomuServer.sAccount.AccountCreate("hashas", out aa);
-            Console.WriteLine(aa);
-            KyomuServer.sAccount.AccountRefer("ytytyty", out aa);
-            Console.WriteLine(aa);
-            Console.ReadLine();
-        }
-    }
-}
-*/
