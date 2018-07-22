@@ -11,7 +11,7 @@ namespace KyomuServer
     {
         /*
          引数 accountID:ユーザーID  
-         返値 return:付箋の配列JSON  out:HTTPのステータス
+         返値 return:付箋の配列JSON  out:HTTPのステータスコード
          受け取ったユーザーIDからDB内の付箋を検索し、該当する付箋をJSONの配列に変換して返す
              */
         public static JToken GetFusenAllData(string accountID, out int statusCode)
@@ -41,7 +41,7 @@ namespace KyomuServer
 
         /*
          引数 accountID:ユーザID
-         返値 return:作成された付箋のJSON out:HTTPのステータス
+         返値 return:作成された付箋のJSON out:HTTPのステータスコード
          クライアント側から付箋作成要求が出されたときに呼ばれる
          空の付箋を生成、そのfusenIDを設定して、DBに保存、JSONにして送信
              */
@@ -98,7 +98,7 @@ namespace KyomuServer
 
         /*
          引数 付箋JSON
-         返値 return:更新された付箋のJSON out:HTTPのステータス
+         返値 return:更新された付箋のJSON out:HTTPのステータスコード
          クライアントで変更された付箋の情報を受け取り、DB内から該当する付箋を検索し更新
          更新結果は確認のため返される
              */
@@ -137,7 +137,7 @@ namespace KyomuServer
 
         /*
          引数 accountID:ユーザID fusenID:付箋ID
-         返値 return:削除された付箋のJSON out:HTTPのステータス
+         返値 return:削除された付箋のJSON out:HTTPのステータスコード
          クライアントで削除された付箋の情報を受け取り、DB内から該当する付箋を検索し該当するデータを削除
          更新結果は確認のため返される
              */

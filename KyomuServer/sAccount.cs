@@ -39,8 +39,11 @@ namespace KyomuServer
         }
        
         /*
-         引数
-         返値
+         引数 accountName:ユーザネーム
+         返値 return:ユーザ情報JSON(ユーザID & ユーザネーム) out:HTTPのステータスコード
+         新しくアカウントを作成するときに呼び出される
+         既に使われている名前や、使用不可に設定している名前の場合は失敗として返す
+         そうでない場合はユーザIDを生成し名前と一緒にして返す
              */
         public static JObject AccountCreate(string accountName, out int statusCode)
         {
@@ -87,8 +90,11 @@ namespace KyomuServer
         }
 
         /*
-         引数
-         返値
+         引数 accountName:ユーザネーム
+         返値 return:ユーザ情報JSON(ユーザID & ユーザネーム) out:HTTPのステータスコード
+         ログインをする際に呼び出される
+         該当する名前が見つからない場合は失敗として返す
+         見つかった場合はユーザネームとそれに紐づいているユーザIDを一緒にして返す
              */
         public static JObject AccountRefer(string accountName, out int statusCode)
         {

@@ -47,6 +47,7 @@ namespace KyomuServer.Models
 
 namespace KyomuServer.Database
 {
+    //データベースをC#で扱えるよう宣言するクラス
     public class KyomuDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }

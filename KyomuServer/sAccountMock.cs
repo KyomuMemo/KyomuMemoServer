@@ -7,6 +7,7 @@ namespace KyomuServer
 {
     namespace Mock
     {
+        //PostgreSQLを使わないデバッグ用のモック
         class sAccount
         {
             List<User> users;
