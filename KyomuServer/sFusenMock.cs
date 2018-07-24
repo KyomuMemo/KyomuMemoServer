@@ -8,6 +8,7 @@ namespace KyomuServer
 {
     namespace Mock
     {
+        //PostgreSQLを使わないデバッグ用のモック
         class sFusen
         {
             List<Data> fusens;

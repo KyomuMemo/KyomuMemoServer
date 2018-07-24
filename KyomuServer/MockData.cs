@@ -5,6 +5,9 @@ using Newtonsoft.Json.Linq;
 
 namespace KyomuServer
 {
+    /*
+     PostgreSQLを使用しないモック用DB
+         */
     namespace Mock
     {
         class User

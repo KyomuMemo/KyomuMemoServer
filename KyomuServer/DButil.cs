@@ -7,6 +7,7 @@ namespace KyomuServer
 {
     class Util
     {
+        // ユーザデータをJSONに変換する関数
         public static JObject UserToJobj(Models.User user)
         {
             var json = new JObject();
@@ -14,6 +15,7 @@ namespace KyomuServer
             json.Add("userName", new JValue(user.name));
             return json;
         }
+        // 付箋データをJSONに変換する関数
         public static JObject FusenToJobj(Models.Fusen fusen)
         {
             var json = new JObject();

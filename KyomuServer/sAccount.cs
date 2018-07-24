@@ -12,7 +12,11 @@ namespace KyomuServer
         public static string[] NgList = { "UNDEFINED" , "undefined" , "Undefined" };
         public static string NameRX  { get => "^[0-9a-zA-Z][0-9a-zA-Z]*$"; }
 
-        //アカウントが存在するかどうかを返す
+        /*
+         引数 accountID:ユーザID
+         返値 アカウントの存在有無
+         アカウントが存在するかどうかを返す
+             */
         public static bool accountIDExist(string accountID)
         {
             using (var db = new KyomuDbContext())
@@ -34,6 +38,13 @@ namespace KyomuServer
             }
         }
        
+        /*
+         引数 accountName:ユーザネーム
+         返値 return:ユーザ情報JSON(ユーザID & ユーザネーム) out:HTTPのステータスコード
+         新しくアカウントを作成するときに呼び出される
+         既に使われている名前や、使用不可に設定している名前の場合は失敗として返す
+         そうでない場合はユーザIDを生成し名前と一緒にして返す
+             */
         public static JObject AccountCreate(string accountName, out int statusCode)
         {
             try
@@ -78,6 +89,13 @@ namespace KyomuServer
             }
         }
 
+        /*
+         引数 accountName:ユーザネーム
+         返値 return:ユーザ情報JSON(ユーザID & ユーザネーム) out:HTTPのステータスコード
+         ログインをする際に呼び出される
+         該当する名前が見つからない場合は失敗として返す
+         見つかった場合はユーザネームとそれに紐づいているユーザIDを一緒にして返す
+             */
         public static JObject AccountRefer(string accountName, out int statusCode)
         {
             try
@@ -107,24 +125,3 @@ namespace KyomuServer
     }
 
 }
-
-
-/*
-namespace ConsoleApplication
-{
-    public class Program
-    {
-
-        public static void Main(string[] args)
-        {
-        
-            int aa = 0;
-            KyomuServer.sAccount.AccountCreate("hashas", out aa);
-            Console.WriteLine(aa);
-            KyomuServer.sAccount.AccountRefer("ytytyty", out aa);
-            Console.WriteLine(aa);
-            Console.ReadLine();
-        }
-    }
-}
-*/

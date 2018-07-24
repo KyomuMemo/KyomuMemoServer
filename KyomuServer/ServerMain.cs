@@ -18,18 +18,20 @@ namespace KyomuServer
 {
     class ServerMain
     {
-        static Mock.sAccount mAccount; static Mock.sFusen mFusen;
+        //static Mock.sAccount mAccount; static Mock.sFusen mFusen; //デバッグ用モック
         static bool EndFlag = false;
 
+        //URLを設定しHttpListenerを開始
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
             string[] url = { "http://localhost:2000/" };
-            mAccount = new Mock.sAccount(); mFusen = new Mock.sFusen(); //デバッグ用モック
-            SimpleLister(url);
+            //mAccount = new Mock.sAccount(); mFusen = new Mock.sFusen(); //デバッグ用モック
+            HttpListener(url);
         }
 
-        static void SimpleLister(string[] prefixes)
+        //Http要求を受け付ける
+        static void HttpListener(string[] prefixes)
         {
             if (prefixes == null || prefixes.Length == 0)
                 throw new ArgumentException("prefixes");
@@ -44,6 +46,8 @@ namespace KyomuServer
             listner.Stop();
         }
         
+
+        // Httpの要求から送信内容を生成する関数
         static async void SendInfoAsync(HttpListenerContext context)
         {
             var req = context.Request;
